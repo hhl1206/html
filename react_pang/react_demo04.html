@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>进阶JSX</title>
+</head>
+<body>
+    <!-- react程序渲染到这里面 给个方便用getElementById进行选择-->
+    <div id="reactContainer"></div>
+    <!-- 把两个文件用script引进来 快捷键alt+shift+向下箭头复制粘贴同一行 -->
+    <script src="https://cdn.bootcss.com/react/15.6.1/react.js"></script>
+    <script src="https://cdn.bootcss.com/react/15.6.1/react-dom.js"></script>
+    <script src="https://cdn.bootcss.com/babel-core/5.8.38/browser.js"></script>
+    <!-- 注意，写jsx的时候，script要写text/babel 需要用Babel进行转换的就要用这个-->
+    <script type="text/babel">
+        //不用组件的形式，而使用数组的形式
+        let arr = [
+            // 加上key，可以自己随便加,只要不重复就行
+            <h1 key='1'>hello linan</h1>,
+            <h1 key='2'>hello 临安</h1>,
+        ]
+        // 数组的循环必须要有一个key的
+        // 虽然有结果显示，但是有一个waring,因为没有key
+        ReactDom.render( //接受两个参数，一个是要挂在的组件，一个是要挂在哪里 直接在这里循环，用标签包起来
+            <div>{arr}</div>,
+            document.getElementById('reactContainer')
+        )
+    </script>
+</body>
+</html>

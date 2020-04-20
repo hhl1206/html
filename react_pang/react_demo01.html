@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- react程序渲染到这里面 给个方便用getElementById进行选择-->
+    <div id="reactContainer"></div>
+    <!-- 把两个文件用script引进来 快捷键alt+shift+向下箭头复制粘贴同一行 -->
+    <!-- <script src="./common/react.js"></script>  -->
+    <!-- <script src="https://unpkg.com/browse/react@16.13.1/umd/react.development.js"></script> -->
+    <!-- <script src="./common/react-dom.js"></script> -->
+    <!-- <script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script> -->
+
+    <script src="https://cdn.bootcss.com/react/15.6.1/react.js"></script>
+    <script src="https://cdn.bootcss.com/react/15.6.1/react-dom.js"></script>
+    
+    <script>
+        // 做一个组件
+        // react声明组件React.createClass()的方法（这个是react.js中的）,里面写一个对象，里面必须有一个主要方法render，里面渲染我们的组件
+        var HelloComonent = React.createClass({
+            // render属性，接受一个匿名函数,然后必须return返回值，返回我们的组件
+            // 做一个以h1标签的组件，第二参数写null，然后和里面要放的值是
+            render: function(){ //用于将模板转换为html并插入到指定的Dom结点
+                return React.createElement("h1", null, "hello world")
+            }
+        }); //然后一个组件就声明好了，但是还不能用，要把它渲染
+        // 渲染用ReactDom,是react-dom中的，
+        // ReactDom的render方法，里面有两个参数,第一个是我们的组件，第二个写要渲染到哪里（我们要渲染到div)
+        ReactDom.render(
+            React.createElement(HelloComonent,null), 
+            document.getElementById('reactContainer')
+        );
+        //看下效果
+    </script>
+</body>
+</html>
