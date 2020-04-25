@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生命周期</title>
+</head>
+<body>
+    <!-- react程序渲染到这里面 给个方便用getElementById进行选择-->
+    <div id="demo"></div>
+    <!-- 把两个文件用script引进来 快捷键alt+shift+向下箭头复制粘贴同一行 -->
+    <script src="https://cdn.bootcss.com/react/15.6.1/react.js"></script>
+    <script src="https://cdn.bootcss.com/react/15.6.1/react-dom.js"></script>
+    <script src="https://cdn.bootcss.com/babel-core/5.8.38/browser.js"></script>
+    <!-- 注意，写jsx的时候，script要写text/babel 需要用Babel进行转换的就要用这个-->
+    <script type="text/babel">
+        // 创建组件
+        var AddCount = React.createClass({
+            // 要改变它的状态，有状态就要先初始化,初始化其实也是钩子函数，只是不是生命周期，他只是用来初始化状态的
+            getInitialState: function() {
+                // 先在控制台输出
+                console.log('1.getInitialState');
+                return {count:1};
+            },
+            // 五个钩子函数
+            componentWillMount: function() { //组件挂载到真实DOM之前执行的
+                console.log('2.componentWillMount');
+            },
+            componentDidMount: function(){ //组件已经挂载完成了
+                console.log('3.componentDidMount');
+            },
+            componentWillUpdate: function(){ //更新
+                console.log('4.componentWillUpdate');
+            },
+            componentDidUpdate: function(){ //更新结束
+                console.log('5.componentDidUpdate');
+            },
+            // 因为要卸载组件比较麻烦，所以先不做
+            // 因为要更新状态，所以要一个更新状态的方法
+            handleClick:function(event) {
+                // 用setState方法，里面是对象
+                this.setState({ count:this.count + 1 });
+            },
+            render: function() {
+                // 返回的时候用一个括号括起来是能更好的把JSX语法语义化，可以换行，如果没有的话，我们的标签记得要紧跟在return后面
+                return (
+                    <p>
+                        {this.state.count} <br />
+                        <button onClick = {this.handleClick}>Add</button>    
+                    </p>
+                    // 记得onClick的C是要大写的
+                )
+            }
+        });
+        // 然后要渲染到真实的DOM中
+        ReactDOM.render(
+            <AddCount />,
+            document.getElementById("dome")
+        )
+    </script>
+</body>
+</html>

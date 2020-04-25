@@ -15,9 +15,9 @@
     <!-- 注意，写jsx的时候，script要写text/babel 需要用Babel进行转换的就要用这个-->
     <script type="text/babel">
         // 声明一个组件，组件第一个字母都是大写的
-        var TextBocComponent = React.createClass({
+        var TextBoxComponent = React.createClass({
             //主要学习State
-            // 初始化状态：他接受一个匿名函数,记住getInitial必须有返回值，记得先写上return
+            // 1. 初始化状态：他接受一个匿名函数,记住getInitial必须有返回值，记得先写上return
             getInitialState: function() {
                 // 我们要定义的是一个文本框的允许编和不允许，这里返回一个对象enable
                 return {enable: false};
@@ -25,9 +25,32 @@
             // 再写一个点击按钮的方法
             handleClick: function(event) {
                 // 是在数据发生变化的时候调用setState可以改变状态，可以重新渲染组件，也就是当我们要重新渲染状态的时候，必须使用setState，而不是像vue
-                this.setState()
+                // vue是直接改它的状态
+                // react是单向数据，vue是双向数据绑定
+                //给他一个对象  this.state就是我们定义的getInitialState初始化状态，".enable"就是里面的对象
+                this.setState({enable: !this.state.enable})
+            },
+            //组件，必须有一个render属性，是一个匿名函数
+            render: function() {
+                // return里面是jsx语法
+                // 要注意，在react中，如果使用表达式的形式（=），不用再写""直接{}
+                // 2.注意，state数据的方法，不需要再加"",要用{}
+                return  (
+                    <p>                        
+                        <input type="text" disabled = {this.state.enable}/>
+                        <button onClick={this.handleClick}>改变textBox状态</button>
+                    </p>
+                )
+                //3.注意,onClick，C要大写，因为我们是在javascript中写的，js代码
             }
         })
+        //定义完了组件，然后是进行网页DOM的渲染
+        // 第一个参数是要加上去的组件，第二个是要渲染到哪个节点
+        ReactDOM.render(
+            <TextBoxComponent />,
+            document.getElementById("reactContainer")
+        )
+        // 在终端中用live-server预览
     </script>
 </body>
 </html>

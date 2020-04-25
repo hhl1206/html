@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>闪动效果案例</title>
+</head>
+<body>
+    <!-- react程序渲染到这里面 给个方便用getElementById进行选择-->
+    <div id="demo"></div>
+    <!-- 把两个文件用script引进来 快捷键alt+shift+向下箭头复制粘贴同一行 -->
+    <script src="https://cdn.bootcss.com/react/15.6.1/react.js"></script>
+    <script src="https://cdn.bootcss.com/react/15.6.1/react-dom.js"></script>
+    <script src="https://cdn.bootcss.com/babel-core/5.8.38/browser.js"></script>
+    <!-- 注意，写jsx的时候，script要写text/babel 需要用Babel进行转换的就要用这个-->
+    <script type="text/babel">
+        // 声明一个组件，注意声明的时候，第一个字母要大写
+        var Hello = React.createClass({
+            //首先声明一个状态，控制闪动的，状态和属性的区别，属性是在组件中不进行变化的，状态时变化的，闪动是变动的，所以声明为状态
+            // 状态初始化,必须有一个返回值  返回一个对象
+            // 写了状态和属性后，然后作闪动效果，希望在组件加载完成之后，就是渲染到正常的DOM之后，所以用到生命周期
+            getInitialState: function() {
+                return {opacity:1.0} //透明度
+            },
+            // 生命周期
+            componentDidMount:function(){
+                // 计时器 绑定一下this
+                setInterval(function(){
+                    // 操纵state
+                    // 给一个变量，这样会比较好操作
+                    var opacity = this.state.opacity;
+                    opacity -= .05;
+                    // 眼睛能见的感觉没了
+                    if(opacity < 0.1) {
+                        opacity = 1.0
+                    }
+                    // 变量设完了然后改变属性 里面放对象
+                    this.setState({
+                        opacity:opacity //第一个opacity是我们的style中的，第二个是计时器声明的，就是变动的值
+                    })
+                }.bind(this),100)
+            },
+            render: function() {
+                return (
+                    // 直接用变量得形式{}，不加双引号
+                    // 引用我们的opacity的时候，记得要再加一个{}这里的就是我们的对象了，而不是像vue两个{{}}代表插值
+                    // h2中使用属性
+                    <div style={{opacity:this.state.opacity}}>
+                        <h2>Hello {this.props.name}</h2>
+                    </div>
+                )
+            }
+        });
+        // 然后渲染
+        ReactDom.render(
+            // 给一个属性
+            <Hello name = "linan" />,
+            document.getElementById("demo")
+        )
+    </script>
+</body>
+</html>

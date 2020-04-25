@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>props</title>
+</head>
+<body>
+    <!-- react程序渲染到这里面 给个方便用getElementById进行选择-->
+    <div id="reactContainer"></div>
+    <!-- 把两个文件用script引进来 快捷键alt+shift+向下箭头复制粘贴同一行 -->
+    <script src="https://cdn.bootcss.com/react/15.6.1/react.js"></script>
+    <script src="https://cdn.bootcss.com/react/15.6.1/react-dom.js"></script>
+    <script src="https://cdn.bootcss.com/babel-core/5.8.38/browser.js"></script>
+    <!-- 注意，写jsx的时候，script要写text/babel 需要用Babel进行转换的就要用这个-->
+    <script type="text/babel">
+        // 声明一个组件 用let这个块级元素
+        // react规定，定义组件的时候，首字母要大写！
+        let HelloBox = React.createClass({  //里面的是对象，里面有一个render(必须return的一个匿名函数)
+            // 用变量的形式，或者说插值的形式
+            // 然后用属性传递过来别的值this.props是react的固定的写法，.myattr是我们自定义的属性
+            render:function(){
+                return (<div>{'hello' + this.props.myattr}</div>)
+            }
+        });
+        //然后渲染到div上
+        ReactDOM.render(
+            // 然后在这里写上我们的属性值
+            <HelloBox myattr = "hello linan"/>,
+            document.getElementById("reactContainer")
+        );
+        // 打开live-server检查一下
+        // 要注意，要想好我们的组件，哪些是props哪些是state，通常，固定的组件，大多是只读的
+        // 应用父组件传过来的组件适合用props，在组件里不进行改变的，比如我们常用的类名，颜色，字体，回调函数等等
+        // 而state是组件在进行组件渲染的时候会进行改变的或者在生命周期会进行改变的
+    </script>
+</body>
+</html>
