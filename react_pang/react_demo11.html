@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取真实节点</title>
+</head>
+<body>
+    <!-- react程序渲染到这里面 给个方便用getElementById进行选择-->
+    <div id="demo"></div>
+    <!-- 把两个文件用script引进来 快捷键alt+shift+向下箭头复制粘贴同一行 -->
+    <script src="https://cdn.bootcss.com/react/15.6.1/react.js"></script>
+    <script src="https://cdn.bootcss.com/react/15.6.1/react-dom.js"></script>
+    <script src="https://cdn.bootcss.com/babel-core/5.8.38/browser.js"></script>
+    <!-- 注意，写jsx的时候，script要写text/babel 需要用Babel进行转换的就要用这个-->
+    <script type="text/babel">
+        // 把组件渲染到页面上，然后我们再看怎么用ref来操纵虚拟DOM
+        // 先声明一个组件
+        var MyComponent = React.createClass({
+            handleClick:function() {
+                this.refs.myTestInput.focus();//进行光标定位
+            },
+            //一定得是一个匿名函数，这个react的基本语法要求
+            render: function() {
+                return (
+                    // 做组件的时候一定要最外层有个东西
+                    // 放个按钮是为了点击的时候把光标定位到文本框中
+                    // 使用react提供的ref，可以理解为id
+                    // 注意这里的是ref，而使用的时候是refs，他代表所有的ref
+                    <div>
+                        <input type="text" ref="myTestInput"></input>
+                        <input type="button" value="focus the text input" onClick={this.handleClick}/>
+                    </div>
+                )
+            }
+        });
+        //先看一下文本框和按钮能不能渲染到页面上
+        ReactDOM.render(<MyComponent />,document.getElementById("demo"));
+        // 打开控制台ctrl+~
+        // 要注意的点，要先把组件渲染到我们的页面上，然后才能做这些操作
+    </script>
+</body>
+</html>

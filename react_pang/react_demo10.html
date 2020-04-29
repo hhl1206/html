@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proptypes</title>
+</head>
+<body>
+    <!-- react程序渲染到这里面 给个方便用getElementById进行选择-->
+    <div id="demo"></div>
+    <!-- 把两个文件用script引进来 快捷键alt+shift+向下箭头复制粘贴同一行 -->
+    <script src="https://cdn.bootcss.com/react/15.6.1/react.js"></script>
+    <script src="https://cdn.bootcss.com/react/15.6.1/react-dom.js"></script>
+    <script src="https://cdn.bootcss.com/babel-core/5.8.38/browser.js"></script>
+    <!-- 注意，写jsx的时候，script要写text/babel 需要用Babel进行转换的就要用这个-->
+    <script type="text/babel">
+        // 声明一个组件
+        var Mytitle = React.createClass({
+            // 是一个匿名函数 返回值返回一个对象，为title设初值
+            getDefaultProps: function() {
+                return {title:"hello linan"}
+            },
+
+            // 用这个也叫属性也叫成员，他是一个对象形式
+            propTypes:{ //记住这个是小写的
+                title:React.PropTypes.string.isRequired, //一定是个逗号//这里的是大写的
+            },
+            render:function() {
+                // 对title进行限定，一是必须传入title属性，二是必须是字符串
+                return <h2>{this.props.title}</h2>
+            }
+        });
+        // 声明一个试一下
+        var data = 123; //int型的
+        // 然后再渲染到页面上
+        ReactDOM.render(<Mytitle title={data} />,document.getElementById("demo"));
+        // 页面上是正常出来了123，但是console有一个warning警告，说propTypes必须是string类型的
+        // 还需要注意，他这个报错只是在开发模式下会有用，但是生产模式下就不起作用了（为了节省资源）
+        // 如果要在生产模式下，就要做相应的处理
+
+        // 默认值，如果传了title的设置，那就会显示传的值
+        ReactDOM.render(<Mytitle />,document.getElementById("demo"));
+    </script>
+</body>
+</html>

@@ -91,6 +91,28 @@ this.props对象的属性与组件的属性一一对应，但有一个例外，�
 比如说写一个有序列表ol li
 li就是我们的子节点，在html中叫子标签
 this.props.children就是来创建这种形式的组件
+react_demo09.html
+如果没有子节点的话，他就会返回undefined
+
+关于端口
+如果8080被占用了，就用live-server --port=4040 就会从4040端口开启项目
+
+# 9.组件的属性验证
+props有些时候是需要验证的，也就是说组件的属性是可以接受任何值的一般，但是有时候我们希望对外界，对直接传过来的属性进行限定，比如希望name不可缺少，或者为字符串，这种限定对确保我们的组件被正确使用是很必要的为此react引入了Propstypes机制,主要是做验证使用的
+
+默认值，直接给默认值使用getdefaultprops 也是一个成员属性
+
+# 10.获取真实的DOM节点
+只有渲染成功后，才会形成真实的DOM，react也只是渲染变化的部分，这也是react性能好的原因之一
+怎么获取组件中的DOM，react提供了一个ref
+
+# 11.表单bind复用
+react表单的使用 表单会缓存用户的信息
+onChange+bind绑定事件
+
+# 12.表单name复用
+表单的另一种复用方式
+react_demo13.html
 
 # react16 28集
 https://jspang.com/detailed?id=46

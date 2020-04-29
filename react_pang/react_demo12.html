@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取真实节点</title>
+</head>
+<body>
+    <!-- react程序渲染到这里面 给个方便用getElementById进行选择-->
+    <div id="demo"></div>
+    <!-- 把两个文件用script引进来 快捷键alt+shift+向下箭头复制粘贴同一行 -->
+    <script src="https://cdn.bootcss.com/react/15.6.1/react.js"></script>
+    <script src="https://cdn.bootcss.com/react/15.6.1/react-dom.js"></script>
+    <script src="https://cdn.bootcss.com/babel-core/5.8.38/browser.js"></script>
+    <!-- 注意，写jsx的时候，script要写text/babel 需要用Babel进行转换的就要用这个-->
+    <script type="text/babel">
+        var Myform = React.createClass({
+            // 必须有返回值，返回一个对象
+            getInitialState:function(){
+                return {
+                    username: '',
+                    gender: 'man',
+                    checked:true
+                }
+            },
+            // 要传一个参数，看到底是哪个在变化
+            // name的作用就是，下面的哪个组件在变化
+            handleChange:function(name, event) {
+                // 要一个新的对象出来
+                var newState = {};
+                // 用这种方式（event),我们onchange就能用binding进行复用，直接每一个的change事件都用handleChange
+                newState[name] = name == "checked" ? event.target.checked : event.target.value;
+                this.setState(newState);
+                console.log(newState);
+            },
+            submitHandler:function(e) {
+                //传一个e的作用，是说禁止表单的默认行为，表单是有一个默认提交行为的，不执行那个默认行为，而是用我们这里的方法后面的
+                e.preventDefault();//阻止默认行为
+                // is监控我们选择的状态this.state.checked
+                var is = this.state.checked?'是':'不是';
+                // gender监控我们的select的状态
+                var gender = this.state.gender == "man"?"帅哥":"美女";
+                // 然后弹出
+                alert(this.state.username+is+gender+'。');
+
+            },
+            render:function(){
+                // 第一个知识点label我们之前用的时候是用for="username",这里不能用要加一个htmlFor
+                // 怎么让控制台监控到事件呢？首先要给他们做一个状态的初始化,把state中的值绑定到一起了，那怎么监视到数据？
+                // 所有的表单的监视状态都是用onChange事件
+                // 需要一个调用onChange的方法我们写一个handleChange方法
+                // 然后还需要用bind方法,他有两个参数，一个是this,一个是组件的名字,这就是我们bind的复用
+                return(
+                    // 调用提交事件
+                    <form onSubmit={this.submitHandler}>
+                        <label htmlFor="username">请输入您的姓名：</label>
+                        <input type="text" name="username" id="username" onChange={this.handleChange.bind(this,"username")} value={this.state.username}/>
+                        <br />
+                        <label htmlFor="checkbox">是或者否</label>
+                        <input type="checkbox" name="checked" id="checkbox" onChange={this.handleChange.bind(this, "checked")}  checked={this.state.checked}/>
+                        <br />
+                        <label htmlFor="gender">请选择：</label>
+                        <select name="gender" id="" onChange={this.handleChange.bind(this, "gender")} value={this.state.gender}>
+                            <option value="man">帅哥</option>
+                            <option value="woman">美女</option>
+                        </select>
+                        <br />
+                        <button type="submit" >提交</button>
+                    </form>
+                    // 然后提交的时候能显示我们表单的相应内容，新增一个方法
+                )
+            }
+        })
+        
+        ReactDOM.render(<MyForm />,document.getElementById("demo"));
+        
+    </script>
+</body>
+</html>

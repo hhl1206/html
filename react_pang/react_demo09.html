@@ -19,14 +19,35 @@
         var NodesList = React.createClass({
 
             // 创建组件必须要有的一个成员属性
+            // render中一定是一个纯粹的组件结构，直接return
             render: function(){
                 // 为了能格式化或者说为了让JSX更好看，加()
                 return (
+                    // 声明了一个有序列表
                     <ol>
+                        {
+                            // 遍历子节点，react帮我们提供了一个方法React.Children,有个坑，遍历的时候是要大写的，然后用map进行遍历
+                            // 遍历的时候有两个参数，这里面的参数是小写children,第二个参数是回调函数
+                            // 回调我们有序列表的结构
+                            // 如果没有子节点的话，他就会返回undefined，有一子节点，数据类型将变成Object，有多个，就是Array
+                            // 所以实际用的时候要做一个业务逻辑处理
+                            React.Children.map((this.props.children,function(child){
+                                return (<li>{child}</li>)
+                            }))
+                        }
                     </ol>
                 )
             }
         });
+        // 组件写完了要渲染到DOM上
+        ReactDOM.render(
+            // 不能直接写<NodesList />了
+            <NodesList>
+                <span>linan</span>
+                <span>临安</span>
+            </NodesList>,
+            document.getElementById("demo")
+        )
     </script>
 </body>
 </html>
