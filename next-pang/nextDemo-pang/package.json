@@ -1,0 +1,20 @@
+{
+  "name": "nextDemo-pang",
+  "version": "1.0.0",
+  "description": "next.js是react的服务端的渲染框架\r # Next.js\r 1. 什么是服务端渲染，什么是客户端渲染\r 以前做的程序叫SPA，比如说我们vue react做的应用大部分的都是SPA：single page web application\r 实际上无论是vue 还是react开发的都是单页应用 会有很不好的问题：\r - 一个页面要把所有的资源都加入到这一个页面中就会出先首屏加载过慢\r - 还有一个问题，就是没办法SEO（就是搜索引擎优化） 因为所有的页面都在一个页面\r next.js解决的就是服务端进行渲染：解决首屏加载变得更迅速 + 可以SEO",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "next": "^9.3.6",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  }
+}
