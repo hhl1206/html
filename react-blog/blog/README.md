@@ -265,3 +265,76 @@ bug:
 github:https://github.com/eggjs/egg
 博客系统的服务端（或者叫做中台），采用Koa的上层框架egg.js，所谓上层框架就是在Koa的基础上，封装的框架。他主要针对于企业级开发，所以性能和稳定性上都非常不错，而且在国内有很高的声望，由阿里技术团队支持。
 关于koa: https://jspang.com/detailed?id=34
+安装egg.js
+全局安装脚手架工具，
+npm i egg-init -g
+
+- 中台要单独用一个文件夹，新建一下react-blog/service
+创建
+egg-init --type=simple
+--type是以什么形式使用脚手架
+项目名字什么的都回车
+然后service文件夹里面就有东西了，这里面还没有安装依赖包，
+npm install 注意yarn add 不是用这个 是用yarn或者yarn install
+启动服务 yarn dev
+
+## 13.目录结构和约定规范
+简单介绍egg.js的目录结构和约定规范
+- app
+最主要的文件，写的时候主要是在这里
+- config
+整个项目还有服务端的配置文件
+- logs
+日志文件，一般是查看，不修改
+- node_modules
+项目所需要的依赖包
+- run
+运行时生成的配置文件，基本上不修改，是系统自动生成的
+- test
+测试时使用的配合文件，进行服务端测试，接口测试的时候会用
+- typing
+不动
+- .autod.conf.js
+是egg.js自动生成的配置文件，不需要修改
+- .eslintignore .eslintrc
+代码格式化的文件
+- .gitignore
+上传忽略文件
+- package.json
+依赖包的版本，命令
+- readme.md
+使用markdomn写的说明文件
+最主要的文件：app + config + package.json + test(要测试的时候用)
+
+1. app
+agg的开发约定规范
+app/controller
+里面所有的都是服务端的控制器，在这里写了之后，要在外面的router.js中进行路由的配置，然后才能访问到页面，
+app/public
+共用文件，静态文件
+app/service
+当业务逻辑比较复杂，或者与数据库打交道的时候，会新建立一个service文件夹，主要业务逻辑都放在这个文件夹
+app/view
+模板文件，支持很多的模板形式，我们这里是纯接口的形式，不需要模板文件夹
+app/extend
+在模板中启用一些需要扩展的方法的时候就在这里面写，写成扩展方法用就行
+app/middleware
+中间件，比如做路由守卫判断的时候，权限什么的就在这里面做
+2. 做一个简单的小例子
+想要一个http://127.0.0.1:7001/list 页面
+首先要配置一个控制器，controller
+新建controller/home(这个文件已经有了，直接在里面新建方法)
+里面一开始有一个方法
+async index() {
+    const { ctx } = this;
+    ctx.body = 'hi, egg';
+  }
+我们在新建一个方法（都是异步的）
+async list() {
+  const { ctx } = this; //这是固定的写法
+  ctx.body = '<h1>linan blog list</h1>'
+}
+// 写了这个方法怎么能配置到能让页面可以访问到这个list?
+再配置路由：router.js
+router.get('/list', controller.home.list);
+可以访问了
