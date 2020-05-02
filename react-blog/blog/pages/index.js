@@ -2,6 +2,9 @@ import Head from 'next/head'
 import React,{ useState } from 'react';
 // import { Button } from 'antd'
 import Header from '../components/Header'
+import Author from '../components/Author'
+import Advert from '../components/Advert'
+import Footer from '../components/Footer'
 import { Row, Col, List} from 'antd'
 import {
   CalendarOutlined,
@@ -60,9 +63,13 @@ const Home = () => {
         {/* 手机上就不显示右侧栏,设为0 */}
         {/* 数值尽量与Header中的一样,比较好对齐 */}
         <Col className="comm-right" xs={0} sm={0} md={7} lg={5} xl={4}>
-          右侧
+          {/* 右侧 */}
+          <Author></Author>
+          <Advert></Advert>
         </Col>
       </Row>
+      {/* 底部 */}
+      <Footer></Footer>
     </div>
   )
 }

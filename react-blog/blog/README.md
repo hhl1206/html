@@ -7,7 +7,10 @@ npx create-next-app 项目名
 3. 启动服务
 yarn dev 或者 npm run dev
 
+快捷键：
+alt + shift + 向下箭头就能直接复制粘贴
 # 前台 blog
+做UI
 ## 2. 前台开发环境的搭建
 使用next.js + ant-design + ui库
 用户展示模块
@@ -91,7 +94,7 @@ import {
   } from '@ant-design/icons';
   要安装npm install --save @ant-design/icons
 
-# 4.制作首页主题两栏布局
+## 4.制作首页主题两栏布局
 index.js 先在这里写,方便看做成了什么样子
 style/pages/comm.css
 列表页 pages/list.js 把index.js中写的差不多的,复制在里面微调,然后在里面微调就是我们的list列表
@@ -99,7 +102,7 @@ style/pages/comm.css
 同样再建一个detail,就是文章的详细页,同样把index.js中的复制到里面
 然后我们就有了首页,列表页,详情页
 (因为都是左右栏的大体结构)
-# 5.列表
+## 5.列表
 首页有很多文章,是一个列表形式
 列表使用ant-design中列表组件
 index.js中先写(list之后直接用就可以)
@@ -115,3 +118,150 @@ index.js中先写(list之后直接用就可以)
 注意List组件是一个半闭合标签的,它里面是通过属性prop进行设置
 然后因为每一个列表项可能是不一样的,所以新建一个关于页面的css index.css
 在index.js页面引入样式
+## 6.编写博主的介绍组件-Avatar学习
+右侧栏
+是每个页面都有的，所以做成一个单独的页面，这样更好复用，
+新建文件components/Author.js
+头像什么的antd有专门的组件，引入使用
+import { Avatar, Divider } from 'antd'
+Avatar头像，Divider分隔线
+https://ant.design/components/avatar-cn/#header
+然后建一个Author的css样式文件
+还要改一下comm.css中的样式
+因为之前做的时候就已经设了右侧的样式，当时的类名叫.comm-right，现在Author中是
+<div className="author-div comm-box">
+所以把类名改成comm-box就行
+然后再在Author.js中引入样式author.css,用这个样式
+然后把Author.js引入到index.js中
+关于图标：
+从 4.0 开始，antd 不再内置 Icon 组件，请使用独立的包 @ant-design/icons。
+https://ant.design/components/icon-cn/
+{/* 注意这里的size要用{}包，不能写"" */}
+<div><Avatar size={100} src="http://img1.imgtn.bdimg.com/it/u=1540753912,651765651&fm=11&gp=0.jpg"></Avatar></div>
+
+## 7.编写通用广告组件
+这个页面也是每个页面都有的，所以也做成通用组件，单独放在conmponents中
+components/Advert.js
+用全静态的形式编写，因为这里面的都是广告，变动的几率很小，如果写到数据库里，每次查询都要用到数据库，这样对数据库的压力很大
+然后还要加一个组件的css文件advert.css
+写了css记得引入到Advert.js中
+然后把这个组件放到index.js里面去
+
+## 8.博客列表页面快速制作
+- 底部
+底部内容，比如：系统是什么做的，我们是react,然后有一个版权信息，
+底部信息也是每个页面都有的，所以也做一个专门的组件。
+新建组件，pages/Footer.js
+用react hooks声明组件，后面接一个箭头函数，因为我们底部组件没有什么业务逻辑编码，直接用小括号就行，他会直接返回
+()=>()就相当于()=>{return()}
+然后写样式，导入Footer.js
+新建文件public/style/components/footer.css
+然后把写完了的Footer组件引入到index.js中
+- 列表页
+因为我们的相关内容都做成组件了，所以直接复制就可以index.js就可以，因为大部分都是一样的
+微调就行
+1. index.css去掉
+2. List因为引入antd的时候使用了List所以有冲突。改一下名字MyList
+3. 然后因为这个页面是从index.js复制的，关于这个页面的css是放在pages/index.css里面的，因为是这两个都共用的，所以直接剪切到pages/comm.css里面r
+4. index.js列表页和list页要是不一样的内容，所以改一下
+希望列表页多一个面包屑导航，ant-design提供了直接使用就行
+引入Breadcrumb这个组件
+```js
+{/* 面包屑导航 */}
+<div className="bread-div">
+  <Breadcrumb>
+    {/* 里面的子导航， */}
+    <Breadcrumb.item><a href="/">首页</a></Breadcrumb.item>
+    {/*你在哪里*/}
+    <Breadcrumb.item>视频教程</Breadcrumb.item>
+  </Breadcrumb>
+</div>
+```
+看一下效果先
+有点问题：
+Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+组件标签写错了
+Item因为是自动生成的，就是用编译器自动生成的，所以I要大写，
+关于面包屑导航：
+显示当前页面在系统层级结构中的位置，并能向上返回。
+
+列表页内容跟index.js基本上是一样的，只是多了一个面包屑
+然后还有一个详细页，我们的UI部分就差不多了，之后就能做中台了
+
+- 动态的内容，比如文章 列表之类的数据都是从中台拿数据，从数据接口；然后后台会用前后端分离的形式从中台中获取数据给后台进行管理。
+
+难点：中台和前台的结合，后台管理系统，三者打通。
+
+## 9.博客详情页面制作 
+### 9 9.1-基本页面结构
+详细页面难点，要用markdown写，要解析markdown
+- 关于markdown
+Markdown 能被使用来撰写电子书，如：Gitbook。
+当前许多网站都广泛使用 Markdown 来撰写帮助文档或是用于论坛上发表消息。例如：GitHub、简书、reddit、Diaspora、Stack Exchange、OpenStreetMap 、SourceForge等。
+- pages/detailed.js
+之前写过一点点，加一个css文件public/style/pages/detailed.css (页面的样式)
+然后给detailed.js里面加东西
+然后把Author，Advert，Footer组件放上去
+### 10 9.2-MarkDown文档的解析
+编写文档我们一般用markdown方式，然后我们要在我们的文档中解析我们的文档，如何解析？
+要用到一个解析插件叫react-markdown,
+github网址：https://github.com/rexxars/react-markdown
+安装一下：
+yarn add react-markdown
+
+实例markdown：https://rexxars.github.io/react-markdown/
+
+要使用markdown就要有一个markdown文件，我们这里还没有后台文件，先手写一个markdown，复制github的代码，
+然后把detailed中的箭头函数的小括号变成花括号
+把复制了的markdown放进detailed.js文件，如果能用react中的markdown解析成功，就可以。
+
+导入markdown
+import ReactMarkdown from 'react-markdown'
+如何用markdown进行解析
+然后把详细内容渲染到这里
+{/* 文章主体内容 */}
+<div className="detailed-content">
+  这里面解析的是mackdowm里面的内容
+</div>
+直接使用这个组件就可以
+？？？ escapeHtml 如果里面有html标签，不进行转换写成false，就是原样输出html,进行转换就是就会输出htlm标签(好像两个没什么变化)
+
+### 11 9.3-Markdown导航栏制作
+markdown怎么形成目录？
+有一个组件的 markdown-navbar 要安装一下
+yarn add markdown-navbar
+使用：
+引入，// 里面是自带css的，所以要引入css
+import MarkNav from 'markdown-navbar'
+import 'markdown-navbar/dist/navbar.css'
+用一下
+{/* 有四个属性
+  className:允许自定义css
+  source:要解析哪个markdown作为navbar
+  headingTopOffset:锚点距离顶部的距离，默认为0）
+  ordered:是否是有编号 */}
+<MarkNav 
+className="article-menu"
+source={markdown}
+headingTopOffset={0}
+/>
+锚点；就是比如点击一个目录，回跳到那端文章位置，然后文章标题距离顶部的距离是多少，默认是0
+bug:
+有问题，跟markdown的内容配不上
+
+滚动页面内容的时候右侧的markdown-navbar一直在右侧
+这个叫做图钉效果，也叫固钉效果，固定到右边，在ant-design里面也有，引入然后使用就是 Affix
+要固定谁，就在外层放一个这个组件
+{/* 固钉 offsetTop={5} 相对的位置，相对上面空出5个像素*/}
+还有outside-buttom
+
+# 中台搭建 连接前台
+搭中台，服务接口
+## 12.安装egg.js开发环境
+使用egg.js上层框架
+- 为什么叫服务接口？
+无论是前台还是后台，都是从中台获取数据跟数据库进行关联，数据接口和业务逻辑都是些在中台，然后以接口的形式进行页面的操作。
+- egg.js
+github:https://github.com/eggjs/egg
+博客系统的服务端（或者叫做中台），采用Koa的上层框架egg.js，所谓上层框架就是在Koa的基础上，封装的框架。他主要针对于企业级开发，所以性能和稳定性上都非常不错，而且在国内有很高的声望，由阿里技术团队支持。
+关于koa: https://jspang.com/detailed?id=34
