@@ -4,8 +4,9 @@
  * @param {Egg.Application} app - egg application
  */
 module.exports = app => {
-  const { router, controller } = app;
-  router.get('/', controller.home.index);
-  // 照着上面的复制
-  router.get('/list', controller.home.list);
+  // const { router, controller } = app;这里就不用写了，在router/defalt.js里面写了
+  // 这里只做引入
+  // 调用require,传一个app过去
+  require('./router/default')(app)
+  // 去浏览器中访问一下  
 };

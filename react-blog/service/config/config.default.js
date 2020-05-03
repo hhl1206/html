@@ -22,7 +22,27 @@ module.exports = appInfo => {
   const userConfig = {
     // myAppName: 'egg',
   };
-
+  config.mysql = {
+    // database configuration
+    client: {
+      // host
+      // host: 'mysql.com',
+      host: 'localhost', //数据库地址,本机
+      // port
+      port: '3306', //端口
+      // username
+      // user: 'test_user', 
+      user: 'root', //我们使用最高管理员权限的root
+      // password
+      password: '', //数据库密码 
+      // database
+      database: 'react_blog', //数据库名字
+    },
+    // load into app, default is open
+    app: true,
+    // load into agent, default is close
+    agent: false,
+  };
   return {
     ...config,
     ...userConfig,

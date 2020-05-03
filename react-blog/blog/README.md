@@ -1,5 +1,7 @@
 博客系统有三大块：前台 + 接口中台 + 后台管理 是完全独立的，然后配合使用
 https://jspang.com/detailed?id=52
+next + egg(egg-mysql)(Koa的上层框架egg.js) + ant-design(UI组件) + react-markdown(文档解析插件)
+软件：PhpStudy
 1. 安装 
 npm install -g create-next-app
 2. 创建目录
@@ -338,3 +340,186 @@ async list() {
 再配置路由：router.js
 router.get('/list', controller.home.list);
 可以访问了
+
+## 14.RESTful接口介绍和路由配置
+用egg.js设计restful api接口。
+- RESTful
+REST（<资源>表现层状态转化）
+是最流行的网络应用程序设计风格和开发方式，我们在移动端的APP上会使用着这个restful风格设计接口，还有前后端分离，我们也用这个接口设计风格。
+REST 指的是一组架构约束条件和原则。满足这些约束条件和原则的应用程序或设计就是 RESTful。
+Web 应用程序最重要的 REST 原则是，客户端和服务器之间的交互在请求之间是无状态的。
+阮一峰的RESTful： http://www.ruanyifeng.com/blog/2011/09/restful.html
+
+- 这种接口的好处：
+简单 + 有一定的约束性
+约束性：通过请求方式体现
+我们以前常见的请求方式有GET（URL请求），POST（发送请求），
+RESTful的请求方式有4个：GET、POST、PUT、DELETE。它们分别对应四种基本操作：GET用来获取资源，POST用来新建资源（也可以用于更新资源），PUT用来更新资源，DELETE用来删除资源。
+- 通过请求方式进行约定，比如：
+GET：是从服务端获取数据（资源）
+POST：每发送一个post请求，它是在服务端新建一个资源，也就是add
+PUT：更新，相当于修改资源
+DELETE：从服务端删除资源
+
+- 按照RESTful形式先把路由配置好：
+service
+我们分了前台和后台，那我们路由就要新建文件夹
+controller/admin --后台管理用的所有的controller都放在这
+controller/defaulr --前台用的所有控制器
+我们还没有后台的，先做前台的，新建文件
+default/home.js 复制一下app/controller/home.js中的先，修改
+```js
+'use strict';
+
+const Controller = require('egg').Controller;
+
+class HomeController extends Controller {
+  async index() {
+    this.ctx.body = "api接口"
+    // 配置路由
+  }
+}
+
+module.exports = HomeController;
+```
+配置路由，我们现在有一个app/router.js 里面是逐条配置的路由
+```js
+'use strict';
+
+/**
+ * @param {Egg.Application} app - egg application
+ */
+module.exports = app => {
+  const { router, controller } = app;
+  router.get('/', controller.home.index);
+  // 照着上面的复制
+  router.get('/list', controller.home.list);
+};
+```
+修改一下，
+我们的路由也分为前后台，新建文件夹app/router,也分前后台
+app/router/admin.js --后台的配置文件
+app/router/default.js --前台的配置文件
+先写前台default.js
+
+app/router/default.js + app/router.js
+```js
+//暴露出去，暴露的是一个方法app
+module.exports = app=>{
+    // 解构对象,来自app
+    const { router, controller } = app
+    // get方法，第一个参数是路经,第二个，访问的是哪个模块控制层的index方法
+    router.get('/default/index', controller.default.home.index)
+    // 还没引入，还要修改一下入口路由app/router.js
+}
+```
+```js
+'use strict';
+
+/**
+ * @param {Egg.Application} app - egg application
+ */
+module.exports = app => {
+  // const { router, controller } = app;这里就不用写了，在router/defalt.js里面写了
+  // 这里只做引入
+  // 调用require,传一个app过去
+  require('./router/default')(app)
+  // 去浏览器中访问一下
+  
+};
+```
+访问：
+先启动一下yarn dev
+http://127.0.0.1:7001/default/index
+输出了controller/default/home.js中index方法的ctx.body内容
+这样就实现了一个restful接口，主要是路由的分离和controller文件的分离
+让前后台分离。
+
+## 15.Egg.js中连接mysql
+要先使用一个库：egg.sql
+安装：两种方法
+1. npm
+2. yarn (更快一点)
+yarn add egg-mysql
+要配置一下插件plugin.js
+config/plugin.js
+所有插件或者外部组件都需要配置在这里
+```js
+// 配置egg-mysql的plugin
+//暴露我们的mysql，加配置项
+exports.mysql = {
+  enable: true, //是否要开启
+  package: 'egg-mysql' //对应的是哪个包
+}
+//配置完了组件，还要连接数据库
+```
+然后要安装数据库mysql（之前装过了）
+安装PHPstudy？
+打开mysql
+有了配置项，还需要在config.default.js中配置
+可以到npmjs.com中搜索一下配置，这是官方有的
+搜索egg.mysql
+因为我们的文件最后是return解构的...config所以复制的时候把exports改成config
+再相应修改
+关于phpstudy中的mysql
+与之前我装的mysql有端口冲突，
+https://www.cnblogs.com/bushui/p/12296944.html
+发现服务里面自己的MySql服务不见了
+https://blog.csdn.net/BigData_Mining/article/details/88344513
+报错
+Install/Remove of the Service Denied
+解决：用管理员身份打开命令行，输入mysqld -install 
+然后能开了mysql -u root -p
+把phpstudy中的改成3366
+启动phpmysql这里的数据库
+错了没用
+用navicat
+测试一下
+在home.js中
+```js
+// result就是数据库获取的内容
+    // 用异步方式
+    // get是mysql提供的获取单条数据的方式,第二个参数是条件，我们不写直接看全部的
+    let result = await this.app.mysql.get("blog_content",{}) 
+    console.log(result);
+    // this.ctx.body = "api接口"
+    this.ctx.body = result;
+```
+然后打开终端测试一下yarn dev
+http://127.0.0.1:7001/default/index
+得到了内容
+数据库报08004：环境变量的问题
+
+解决Node.js mysql客户端不支持认证协议引发的“ER_NOT_SUPPORTED_AUTH_MODE”问题
+https://waylau.com/node.js-mysql-client-does-not-support-authentication-protocol/
+
+## 16.数据库设计和首页文章编写
+文章表 + 文章类别表
+新建表type article
+然后做接口
+default/home.js
+getArticleList()
+然后去配置浏览器的路由
+router/default.js
+报错了，可能是sql语句错了加上逗号,最后一个不用加，加一个空格就行
+
+## 17.前台读取首页文章列表
+前台读取数据然后显示在页面上
+
+- 前台读取接口需要用一个接口数据，使用axios
+需要安装一下
+打开blog的终端
+yarn add axios
+看一下版本是19版本
+- 来到blog/pages/index.js
+我们现在还只有文章列表的接口，所以要在这里进行读取，是在getInitialProps这个属性中读取
+Home.getInitialProps然后启动前台yarn dev
+怎么把promise赋给页面呢（JSX语法）组件后面的函数是接受一个参数的,我们写上list
+然后把useState中的假数据删掉
+const [mylist, setMylist] = useState(list.data)
+List.Item的别的数据也换一下
+改一下日期addTime
+到sql语句中改，
+'article.addTime as addTime ,' +
+换成双引号，技能解析里面单引号的东西
+然后用sql自带的函数UNIXTIEM()，第一个参数是时间戳，第二个是要做的形式
