@@ -8,4 +8,6 @@ module.exports = app=>{
     // 还没引入，还要修改一下入口路由app/router.js
     // 首页
     router.get('/default/getArticleList', controller.default.home.getArticleList)
+    // 根据id查询详情
+    router.get('/default/getArticleById', controller.default.home.getArticleById)
 }

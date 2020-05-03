@@ -523,3 +523,20 @@ List.Item的别的数据也换一下
 'article.addTime as addTime ,' +
 换成双引号，技能解析里面单引号的东西
 然后用sql自带的函数UNIXTIEM()，第一个参数是时间戳，第二个是要做的形式
+
+问题：日期怎么来的？？
+
+## 18.文章详细页面接口制作
+service/controller/default/home.js
+接口写完了，要让页面从首页跳到详细页，做一个链接
+blog/pages/index.js
+引入Link组件
+{/* next的路由传参 */}
+<Link href={{pathname:'/detailed',query:{id:item.id}}}><a>
+{item.title}
+</a>
+</Link>
+然后去detailed.js中接受id并根据id查询出来的数据
+使用axios
+还要去router/default.js中配置路由
+出现跨域（只要端口不同就算跨域）

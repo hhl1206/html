@@ -13,6 +13,7 @@ import {
 } from '@ant-design/icons';
 import '../public/style/pages/index.css'
 import axios from 'axios'
+import Link from 'next/link'
 
 
 const Home = (list) => {
@@ -42,7 +43,14 @@ const Home = (list) => {
             renderItem={item => (
               // item有几项取决于数据源的数据有几项
               <List.Item>
-                <div className="list-title">{item.title}</div>
+                <div className="list-title">
+                  {/* next的路由传参 */}
+                  <Link href={{pathname:'/detailed',query:{id:item.id}}}>
+                    <a>
+                      {item.title}
+                    </a>
+                  </Link>
+                </div>
                 {/* 还要加小图标 */}
                 <div className="list-icon">
                   <span><CalendarOutlined /> {item.addTime}</span>

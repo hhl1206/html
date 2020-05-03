@@ -6,6 +6,7 @@ import Advert from '../components/Advert' //广告列表
 import Footer from '../components/Footer' //底部栏
 import '../public/style/pages/detailed.css'//引入页面的样式
 import { Row, Col, Breadcrumb, Affix } from 'antd'
+import axios from 'axios'
 import {
   CalendarOutlined,
   FolderOpenOutlined,
@@ -127,6 +128,25 @@ const Detailed = () => {
       <Footer></Footer>
     </div>
   )
+}
+
+// 根据id查询
+// 直接用它里面的方法，也是i、异步的，里面传递上下文，因为我们要接收前台传过来的id
+Detailed.getInotialProps = async(context) => {
+  // 接收前台传过来的id
+  console.log(context.query.id)
+  // 把通过链接传过来的id接受到
+  let id = context.query.id
+  // 然后请求我们的接口，需要一个promise对象
+  const promise = new Promise((resolve)=> {
+    axios('http://127.0.0.1:7001/default/getArticleById').then(
+      (res) => {
+        console.log(res)
+        resolve(res.data.data[0]) //??
+      }
+    )
+  })
+  return await promise
 }
 
 export default Detailed
