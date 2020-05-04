@@ -768,4 +768,92 @@ router.get('/default/getTypeInfo', controller.default.home.getTypeInfo)
 再点击发现点的时候也能跳转了
 不过还只是死的，不能根据类别读取文章列表信息
 
-## 23
+## 23.前台文章列表的制作2-界面制作
+文章列表类型的时候不能是写死的，要从中台接口读出信息，然后根据不同的栏目进行变换
+先做中台接口
+service/app/controller/default/home.js
+设计好了接口，然后是设置路由
+service/router/default.js
+这样设置了路由，从前台我们就能访问到了，中台的工作就完成了，然后去前台
+第一步，前台要想访问这个接口，就要配置apiUrl
+blog/config/apiUrl.js //所有的后台接口我们都放在了这里，
+然后就能写前台UI界面了
+blog/pages/list.js
+导入
+```js
+import React,{ useState,useEffect } from 'react';
+import axios from 'axios'
+import servicePath from '../config/apiUrl'
+import Link from 'next/link' //用于跳转
+```
+然后到getInitialProps中获取后台数据
+https://www.cnblogs.com/wydumn/p/12178670.html
+然后上面的MyList后面的函数要接受得到东西
+  const [mylist, setMylist] = useState(list.data) //两层data,因为我们在sql那里自己加了一层data
+然后可以在下面使用这个
+加跳转到详情页的连接，还有list页的内容
+到浏览器看一下
+点击视频教程有变化但是点后面的别的类型，始终是视频教程那一页，只有点到首页的时候才有变化，
+这是因为我们用了ant-design中的menu组件，然后用了生命周期做点击事件跳转，所以变成了一个单页应用而不是从服务端渲染的，是直接通过前端的单页变化进行访问后端数据的，如果要改成全部前端渲染，直接全部加Link标签也可以实现，但是我们要做的是页面不刷新，进行异步请求数据，然后进行变化，局部刷新，
+改一下useEffect就行 
+list.js
+//当里面的内容发生变化都进行一次执行
+  useEffect(()=>{
+    setMylist(list.data) //就是重新把myList进行重新赋值，然后页面就会发生变化
+  })
+  回到浏览器看看
+  500sql语句写错了，要注意
+ 
+ 这种效果，跟完全的ssr渲染不同，因为
+ 到时候所有的bolg文章在首页都会ssr渲染，搜索引擎都会帮我们爬到，然后其他页面的文章就没必要再做成ssr渲染，因为在首页已经爬过一次了，放到数据库中了，
+
+## 24.让前台所有页面支持Markdown
+首页，列表页的markdown
+pages/index.js
+导入 + 解析（setOptions) + new + 使用
+<div className="list-context">{item.introduce}</div>
+换成
+<div className="list-context"
+dangerouslySetInnerHTML={{__html:marked(item.introduce)}}></div>
+现在支持了，但是css还没有，加一下，复制到index.css中
+
+然后把列表页的也解析一下
+
+# 后台
+## 25.后台开发1-开发环境搭建
+之前使用过create-react-app这个脚手架，这里直接建项目
+打开根目录react-blog
+create-react-app 
+后台不使用服务端渲染，因为我们不需要前端axios,直接使用react-hooks加antd-design做成单页应用，然后进行制作，这样体验感更好，单页应用，
+yarn start
+里面有很多是我们不需要的文件
+src/index.js 修改一下
+```js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+
+ReactDOM.render(
+    <App />,
+  document.getElementById('root')
+);
+```
+把别的css文件删掉
+剩下App.js index.js
+```js
+import React from 'react';
+function App() {
+  return (
+    <div className="App">
+      
+    </div>
+  );
+}
+
+export default App;
+```
+然后还需要ant-design安装一下
+yarn add antd 或者npm install antd --save(就会到dependance)
+然后可以引入
+在App.js中引入
+写个按钮试一下

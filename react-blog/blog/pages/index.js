@@ -15,12 +15,37 @@ import '../public/style/pages/index.css'
 import axios from 'axios'
 import Link from 'next/link'
 import servicePath from '../config/apiUrl' //接口
+//markdown
+import marked from 'marked' //用来解析markdown的代码的
+import hljs from 'highlight.js' //代码高亮
+import 'highlight.js/styles/monokai-sublime.css' //引入样式 //选一个跟sublime编辑器样的那种样式
+
 
 
 const Home = (list) => {
 
   // 文章列表有很多文章,用数组 我们的list.data本身就是数组
   const [mylist, setMylist] = useState(list.data)
+
+  const renderer = new marked.Renderer()
+
+  //然后配置marked，如何解析markdown
+  // 有一个方法,里面传递的是一个对象,这个对象就是我们所有设置的属性都要在这里写
+  marked.setOptions({
+    renderer:renderer,
+    gfm:true, //启动类似github样式的markdown //就是样式渲染的方式跟github一样
+    pedantic: false, //有一个容错的代码在里面，true就是完全不容错,不符合markdown的都不行
+    sanitize: false, //原始输出，忽略html标签（就是比如有视频直接插入，视频渲染，如果填true就会忽略html，视频就不会显示），我们不忽略
+    tables:true, //是否允许我们根据GitHub输出表格，样式是github的样式
+    // 记得tables为true的时候，gfm一定要也要填写上，否则会失效
+    breaks: false, //是否支持github的换行符,也是必须有gfm:true//我们还是使用原来的，不使用github的样式
+    smartLists: true, //就是给我们自动渲染我们的列表,默认是false-》自己写
+    // highlight这里要写一个方法，是如何让让代码高亮，要code进去
+    highlight: function(code) {
+      // 返回的值就是用highlight插件执行highlightAuto(我们不传递我们写的是css代码，还是js代码，它会自动检测是哪种(所以有点慢，传了的话会快点)，然后返回)
+      return hljs.highlightAuto(code).value 
+    }
+  });
 
   return (
     <div>
@@ -58,7 +83,9 @@ const Home = (list) => {
                   <span><FolderOpenOutlined />{item.typeName}</span>
                   <span><FireOutlined /> {item.view_count}人</span>
                 </div>
-                <div className="list-context">{item.introduce}</div>
+                {/* 使用markdown */}
+                <div className="list-context"
+                dangerouslySetInnerHTML={{__html:marked(item.introduce)}}></div>
               </List.Item>
             )}
           />

@@ -15,11 +15,12 @@ import {
 // import ReactMarkdown from 'react-markdown'//不用了删掉
 // 里面是自带css的，所以要引入css
 // import MarkNav from 'markdown-navbar'
-import 'markdown-navbar/dist/navbar.css'
+// import 'markdown-navbar/dist/navbar.css'
 import marked from 'marked' //用来解析markdown的代码的
 import hljs from 'highlight.js' //代码高亮
 import 'highlight.js/styles/monokai-sublime.css' //引入样式 //选一个跟sublime编辑器样的那种样式
 //引入的时候注意文件夹的顺序,后缀不可以省略
+// 文章菜单
 import Tocify from '../components/tocify.tsx'
 import servicePath from '../config/apiUrl' //接口
 

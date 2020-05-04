@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import React,{ useState } from 'react';
+import React,{ useState,useEffect } from 'react';
 // import { Button } from 'antd'
 import Header from '../components/Header'
 import Author from '../components/Author'
@@ -12,20 +12,42 @@ import {
   FireOutlined
 } from '@ant-design/icons';
 // import '../public/style/pages/index.css'
+// 接受接口数据
+import axios from 'axios'
+import servicePath from '../config/apiUrl'
+import Link from 'next/link' //用于跳转
+import marked from 'marked' //用来解析markdown的代码的
+import hljs from 'highlight.js' //代码高亮
+import 'highlight.js/styles/monokai-sublime.css' //引入样式 //选一个跟sublime编辑器样的那种样式
 
 
-const MyList = () => {
+
+
+const MyList = (list) => {
 
   // 文章列表有很多文章,用数组
-  const [mylist, setMylist] = useState(
-    [
-      {title:'50元加入小密圈 胖哥带你学一年',context:'50元跟着胖哥学一年，掌握程序人的学习方法。 也许你刚步入IT行业，也许你遇到了成长瓶颈，也许你不知道该学习什么知识，也许你不会融入团队，也许...........有些时候你陷入彷徨。 你需要一个强力的队友，你需要一个资深老手，你需要一个随时可以帮助你的人，你更需要一个陪你加速前行的。 我在这个行业走了12年，从后端、前端到移动端都从事过，从中走了很多坑，但我有一套适合程序员的学习方法。 如果你愿意，我将带着你在这个程序行业加速奔跑。分享我学习的方法，所学的内容和一切我的资料。 你遇到的职业问题，我也会第一时间给你解答。我需要先感谢一直帮助我的小伙伴，这个博客能产出300多集免费视频，其中有他们的鼎力支持，如果没有他们的支持和鼓励，我可能早都放弃了。 原来我博客只是录制免费视频，然后求30元的打赏。 每次打赏我都会觉得内疚，因为我并没有给你特殊的照顾，也没能从实质上帮助过你。 直到朋友给我介绍了知识星球，它可以专享加入，可以分享知识，可以解答问题，所以我如获珍宝，决定把打赏环节改为知识服务。我定价50元每年，为什么是50元每年？因为这是知识星球允许的最低收费了。'},
-      {title:'React实战视频教程-技术胖Blog开发(更新04集)',context:'50元跟着胖哥学一年，掌握程序人的学习方法。 也许你刚步入IT行业，也许你遇到了成长瓶颈，也许你不知道该学习什么知识，也许你不会融入团队，也许...........有些时候你陷入彷徨。 你需要一个强力的队友，你需要一个资深老手，你需要一个随时可以帮助你的人，你更需要一个陪你加速前行的。 我在这个行业走了12年，从后端、前端到移动端都从事过，从中走了很多坑，但我有一套适合程序员的学习方法。 如果你愿意，我将带着你在这个程序行业加速奔跑。分享我学习的方法，所学的内容和一切我的资料。 你遇到的职业问题，我也会第一时间给你解答。我需要先感谢一直帮助我的小伙伴，这个博客能产出300多集免费视频，其中有他们的鼎力支持，如果没有他们的支持和鼓励，我可能早都放弃了。 原来我博客只是录制免费视频，然后求30元的打赏。 每次打赏我都会觉得内疚，因为我并没有给你特殊的照顾，也没能从实质上帮助过你。 直到朋友给我介绍了知识星球，它可以专享加入，可以分享知识，可以解答问题，所以我如获珍宝，决定把打赏环节改为知识服务。我定价50元每年，为什么是50元每年？因为这是知识星球允许的最低收费了。'},
-      {title:'React服务端渲染框架Next.js入门(共12集)',context:'50元跟着胖哥学一年，掌握程序人的学习方法。 也许你刚步入IT行业，也许你遇到了成长瓶颈，也许你不知道该学习什么知识，也许你不会融入团队，也许...........有些时候你陷入彷徨。 你需要一个强力的队友，你需要一个资深老手，你需要一个随时可以帮助你的人，你更需要一个陪你加速前行的。 我在这个行业走了12年，从后端、前端到移动端都从事过，从中走了很多坑，但我有一套适合程序员的学习方法。 如果你愿意，我将带着你在这个程序行业加速奔跑。分享我学习的方法，所学的内容和一切我的资料。 你遇到的职业问题，我也会第一时间给你解答。我需要先感谢一直帮助我的小伙伴，这个博客能产出300多集免费视频，其中有他们的鼎力支持，如果没有他们的支持和鼓励，我可能早都放弃了。 原来我博客只是录制免费视频，然后求30元的打赏。 每次打赏我都会觉得内疚，因为我并没有给你特殊的照顾，也没能从实质上帮助过你。 直到朋友给我介绍了知识星球，它可以专享加入，可以分享知识，可以解答问题，所以我如获珍宝，决定把打赏环节改为知识服务。我定价50元每年，为什么是50元每年？因为这是知识星球允许的最低收费了。'},
-      {title:'React Hooks 免费视频教程(共11集)',context:'50元跟着胖哥学一年，掌握程序人的学习方法。 也许你刚步入IT行业，也许你遇到了成长瓶颈，也许你不知道该学习什么知识，也许你不会融入团队，也许...........有些时候你陷入彷徨。 你需要一个强力的队友，你需要一个资深老手，你需要一个随时可以帮助你的人，你更需要一个陪你加速前行的。 我在这个行业走了12年，从后端、前端到移动端都从事过，从中走了很多坑，但我有一套适合程序员的学习方法。 如果你愿意，我将带着你在这个程序行业加速奔跑。分享我学习的方法，所学的内容和一切我的资料。 你遇到的职业问题，我也会第一时间给你解答。我需要先感谢一直帮助我的小伙伴，这个博客能产出300多集免费视频，其中有他们的鼎力支持，如果没有他们的支持和鼓励，我可能早都放弃了。 原来我博客只是录制免费视频，然后求30元的打赏。 每次打赏我都会觉得内疚，因为我并没有给你特殊的照顾，也没能从实质上帮助过你。 直到朋友给我介绍了知识星球，它可以专享加入，可以分享知识，可以解答问题，所以我如获珍宝，决定把打赏环节改为知识服务。我定价50元每年，为什么是50元每年？因为这是知识星球允许的最低收费了。'},
-    ]
-  )
+  const [mylist, setMylist] = useState(list.data) //两层data,因为我们在sql那里自己加了一层data
+  //当里面的内容发生变化都进行一次执行
+  useEffect(()=>{
+    setMylist(list.data) //就是重新把myList进行重新赋值，然后页面就会发生变化
+  })
 
+  const renderer = new marked.Renderer()
+  marked.setOptions({
+    renderer:renderer,
+    gfm:true, //启动类似github样式的markdown //就是样式渲染的方式跟github一样
+    pedantic: false, //有一个容错的代码在里面，true就是完全不容错,不符合markdown的都不行
+    sanitize: false, //原始输出，忽略html标签（就是比如有视频直接插入，视频渲染，如果填true就会忽略html，视频就不会显示），我们不忽略
+    tables:true, //是否允许我们根据GitHub输出表格，样式是github的样式
+    // 记得tables为true的时候，gfm一定要也要填写上，否则会失效
+    breaks: false, //是否支持github的换行符,也是必须有gfm:true//我们还是使用原来的，不使用github的样式
+    smartLists: true, //就是给我们自动渲染我们的列表,默认是false-》自己写
+    // highlight这里要写一个方法，是如何让让代码高亮，要code进去
+    highlight: function(code) {
+      // 返回的值就是用highlight插件执行highlightAuto(我们不传递我们写的是css代码，还是js代码，它会自动检测是哪种(所以有点慢，传了的话会快点)，然后返回)
+      return hljs.highlightAuto(code).value 
+    }
+  });
   return (
     <div>
       <Head>
@@ -56,14 +78,22 @@ const MyList = () => {
             renderItem={item => (
               // item有几项取决于数据源的数据有几项
               <List.Item>
-                <div className="list-title">{item.title}</div>
+                {/* 加上link能跳转到详细页 */}
+                <div className="list-title">
+                  <Link href={{pathname:'/detailed',query:{id:item.id}}}>
+                    <a>
+                      {item.title}
+                    </a>
+                  </Link>
+                </div>
                 {/* 还要加小图标 */}
                 <div className="list-icon">
-                  <span><CalendarOutlined /> 2020-05-01</span>
-                  <span><FolderOpenOutlined /> 视频教程</span>
-                  <span><FireOutlined /> 5864人</span>
+                  <span><CalendarOutlined /> {item.addTime}</span>
+                  <span><FolderOpenOutlined /> {item.typeName}</span>
+                  <span><FireOutlined /> {item.view_count}人</span>
                 </div>
-                <div className="list-context">{item.context}</div>
+                <div className="list-context"
+                dangerouslySetInnerHTML={{__html:marked(item.introduce)}}></div>
               </List.Item>
             )}
           />
@@ -80,6 +110,26 @@ const MyList = () => {
       <Footer></Footer>
     </div>
   )
+}
+
+MyList.getInitialProps = async (context) => {
+  // 直接复制index.js中的，然后修改
+  // context是通过上一个路由传递一个上下文文件，然后我们这里要接收，
+  // 从上下文的query.id中就得到了id,后面我们在加到路径后面，然后就能使用res写了
+  let id = context.query.id //？？
+
+  // 传一个resolve,里面的方法就是用axios读取远端的方法，用之前要引入import axios
+  const promise = new Promise((resolve)=>{
+    // axios默认的方法就是get，所以直接加括号
+    // 括号里的参数：远端获取数据的参数，是接口地址
+    // 读取完数据后就then,其中的res就是我们获得的结果
+    axios(servicePath.getListById+id).then( //因为要获取id,所以传递一个上下文环境进来context
+
+      (res)=> resolve(res.data)
+    )
+  })
+  // axios是必须要有一个返回值的,而且必须是await，所以一定要记得加
+  return await promise
 }
 
 export default MyList
