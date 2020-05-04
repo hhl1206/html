@@ -11,7 +11,7 @@ const Author = () => {
     return (
         <div className="author-div comm-box">
             {/* 注意这里的size要用{}包，不能写"" */}
-            <div><Avatar size={100} src="http://img1.imgtn.bdimg.com/it/u=1540753912,651765651&fm=11&gp=0.jpg"></Avatar></div>
+            <div><Avatar size={100} src="http://pic2.zhimg.com/50/v2-958d33fd4a4de747058adcafdf753074_hd.jpg"></Avatar></div>
             {/* 介绍 */}
             <div className="author-introduction">
             微微就是秋天里每片落叶,微微就是彩虹里每滴雨点,微微她很渺小却从不疲倦,微微就是我们

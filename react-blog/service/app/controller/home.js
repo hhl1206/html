@@ -1,7 +1,7 @@
 'use strict';
 
 const Controller = require('egg').Controller;
-
+// 这个文件是不用的，可以删掉了
 class HomeController extends Controller {
   async index() {
     const { ctx } = this;

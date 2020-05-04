@@ -43,6 +43,17 @@ module.exports = appInfo => {
     // load into agent, default is close
     agent: false,
   };
+  // 跨域的egg-cors
+  config.security = {//egg提供的一种默认的安全机制，默认是都开启了csrf,我们改成false
+    csrf: {
+　　　enable: false
+　　},
+    domainWhiteList:['*'] //让所有的都可以
+  };
+  config.cors = {
+    origin: '*', //允许哪些域名可以默认访问
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS' //哪些请求可以跨域访问,要大些
+  };
   return {
     ...config,
     ...userConfig,

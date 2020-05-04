@@ -19,9 +19,11 @@ class HomeController extends Controller {
     // 左连接，标识是type.id
     let sql = 'SELECT article.id as id ,' +
      'article.title as title ,' +
-     'article.article_content as ariticle_content ,' +
+     'article.article_content as article_content ,' +
      'article.introduce as introduce ,' +
-     "FROM_UNIXTIME(article.addTime,'%Y-%m-%d %H:%i:%s' ) as addTime ," +
+    //  "FROM_UNIXTIME(article.addTime,'%Y-%m-%d %H:%i:%s' ) as addTime ," + //时间戳转格式化
+     "DATE_FORMAT(article.addTime,'%Y-%m-%d %H:%i:%s' ) as addTime ," + //格式化时间
+    //  'article.addTime as addTime ,' +
      'article.view_count as view_count ,' +
      'type.typeName as typeName ' +
      'FROM article LEFT JOIN type ON article.type_id = type.id'
@@ -33,23 +35,31 @@ class HomeController extends Controller {
   // 通过id获取文章详细内容
   async getArticleById(){
 
-    //id是从前台传过来的，所以用parmas
-    let id = this.ctx.parmas.id
+    //id是从前台传过来的，所以用params
+    // 注意这里是this.ctx
+    let id = this.ctx.params.id
     let sql = 'SELECT article.id as id ,' +
     'article.title as title ,' +
-    'article.article_content as ariticle_content ,' +
+    'article.article_content as article_content ,' + //文章详细内容//前面的去掉？
     'article.introduce as introduce ,' +
-    "FROM_UNIXTIME(article.addTime,'%Y-%m-%d %H:%i:%s' ) as addTime ," +
+    "DATE_FORMAT(article.addTime,'%Y-%m-%d %H:%i:%s' ) as addTime ," +
     'article.view_count as view_count ,' +
-    'type.typeName as typeName ' +
-    'type.id as typeId ' +
+    'type.typeName as typeName ,' +
+    'type.id as typeId ' + //id //最后一个不用加空格逗号，加空格
     'FROM article LEFT JOIN type ON article.type_id = type.id ' +
+    // 加where 因为是要通过id获得
     'WHERE article.id='+id
-    const result = await this.app.sql.query(sql)
+    // 这里是this.app ?? 注意是mysql
+    const result = await this.app.mysql.query(sql)
     // 记住是花括号
     this.ctx.body = { data: result }
   }
 
+  //得到类别名称和编号
+  async getTypeInfo() {
+    const result = await this.app.mysql.select('type') //这里是直接读类别，不用连接什么，所以用select,括号里面是表的名称
+    this.ctx.body = {data: result}
+  }
 }
 
 module.exports = HomeController;

@@ -14,6 +14,7 @@ import {
 import '../public/style/pages/index.css'
 import axios from 'axios'
 import Link from 'next/link'
+import servicePath from '../config/apiUrl' //接口
 
 
 const Home = (list) => {
@@ -84,7 +85,9 @@ Home.getInitialProps = async () => {
     // axios默认的方法就是get，所以直接加括号
     // 括号里的参数：远端获取数据的参数，是接口地址
     // 读取完数据后就then,其中的res就是我们获得的结果
-    axios('http://127.0.0.1:7001/default/getArticleList').then(
+    // axios('http://127.0.0.1:7001/default/getArticleList').then(
+    axios(servicePath.getArticleList).then(
+
       (res)=>{
         console.log('---->',res.data)
         resolve(res.data)

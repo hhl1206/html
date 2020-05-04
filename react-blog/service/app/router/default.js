@@ -8,6 +8,8 @@ module.exports = app=>{
     // 还没引入，还要修改一下入口路由app/router.js
     // 首页
     router.get('/default/getArticleList', controller.default.home.getArticleList)
-    // 根据id查询详情
-    router.get('/default/getArticleById', controller.default.home.getArticleById)
+    // 根据id查询详情,记得配置参数,跟react配置参数一样，直接在后面加:和要穿的参数，
+    router.get('/default/getArticleById/:id', controller.default.home.getArticleById)
+    router.get('/default/getTypeInfo', controller.default.home.getTypeInfo)
+
 }

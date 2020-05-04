@@ -14,3 +14,9 @@ exports.mysql = {
   package: 'egg-mysql' //对应的是哪个包
 }
 //配置完了组件，还要连接数据库
+
+//配置跨域开egg-cors
+exports.cors = {
+  enable: true,
+  package: 'egg-cors' //开哪个模块 
+}

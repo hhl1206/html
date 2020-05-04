@@ -514,6 +514,8 @@ yarn add axios
 - 来到blog/pages/index.js
 我们现在还只有文章列表的接口，所以要在这里进行读取，是在getInitialProps这个属性中读取
 Home.getInitialProps然后启动前台yarn dev
+关于getInitialProps：
+https://blog.csdn.net/gwdgwd123/article/details/85030708
 怎么把promise赋给页面呢（JSX语法）组件后面的函数是接受一个参数的,我们写上list
 然后把useState中的假数据删掉
 const [mylist, setMylist] = useState(list.data)
@@ -521,22 +523,249 @@ List.Item的别的数据也换一下
 改一下日期addTime
 到sql语句中改，
 'article.addTime as addTime ,' +
-换成双引号，技能解析里面单引号的东西
+换成双引号，就能解析里面单引号的东西
 然后用sql自带的函数UNIXTIEM()，第一个参数是时间戳，第二个是要做的形式
 
-问题：日期怎么来的？？
+问题：日期怎么来的，发现数据库的addTime要换一下默认值
+https://blog.csdn.net/qq_25821067/article/details/54851486
+1、将字段类型设为  TIMESTAMP 
+2、将默认值设为  CURRENT_TIMESTAMP
+然后页面上的格式化2020-05-04T02:43:34.315Z是：
+"DATE_FORMAT(article.addTime,'%Y-%m-%d %H:%i:%s' ) as addTime ," + //格式化时间
 
 ## 18.文章详细页面接口制作
 service/controller/default/home.js
+关于ctx和app:https://www.cnblogs.com/cag2050/p/9914335.html
 接口写完了，要让页面从首页跳到详细页，做一个链接
 blog/pages/index.js
 引入Link组件
+1. 
+```js
 {/* next的路由传参 */}
 <Link href={{pathname:'/detailed',query:{id:item.id}}}><a>
 {item.title}
 </a>
 </Link>
+```
 然后去detailed.js中接受id并根据id查询出来的数据
 使用axios
 还要去router/default.js中配置路由
 出现跨域（只要端口不同就算跨域）
+Access to XMLHttpRequest at 'http://127.0.0.1:7001/default/getArticleById?id1' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+## 19.解决Egg.js跨域问题和Bug调试
+访问详细页面的时候，遇到跨域问题，因为要从localhost:3000 -> 7001
+1. 安装egg-cors模块 
+打开service的终端，因为在服务端设置跨域
+yarn add egg-cors
+这个模块是专门用来解决跨域的
+2. 到service/config/plugin.js
+需要把安装的模块开一下
+3. 在config.default.js中设置
+```js
+// 跨域的egg-cors
+  config.security = {
+    csrf: { //egg提供的一种默认的安全机制，默认是都开启了csrf,我们改成false
+      enable: false
+    },
+    domainWhiteList:['*'] //让所有的都可以
+  };
+  config.cors = {
+    origin: '*', //允许哪些域名可以默认访问
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS' //哪些请求可以跨域访问,要大些
+  }
+```
+- HTTP请求方式：
+1 GET	请求指定的页面信息，并返回实体主体。
+2	HEAD	类似于 GET 请求，只不过返回的响应中没有具体的内容，用于获取报头
+3	POST	向指定资源提交数据进行处理请求（例如提交表单或者上传文件）。数据被包含在请求体中。POST 请求可能会导致新的资源的建立和/或已有资源的修改。
+4	PUT	从客户端向服务器传送的数据取代指定的文档的内容。
+5	DELETE	请求服务器删除指定的页面。
+6	CONNECT	HTTP/1.1 协议中预留给能够将连接改为管道方式的代理服务器。
+7	OPTIONS	允许客户端查看服务器的性能。
+8	TRACE	回显服务器收到的请求，主要用于测试或诊断。
+9	PATCH	是对 PUT 方法的补充，用来对已知资源进行局部更新 。
+- RESTful的请求方式有4个：GET、POST、PUT、DELETE
+设计完了要重启服务，重启service
+再访问一下
+点击标题发现报500的错误，没传值
+xhr.js:178 GET http://127.0.0.1:7001/default/getArticleById?id=1 500 (Internal Server Error)
+因为他是接受一个id的，不传会报错，
+2. 
+blog/pages/detailed.js
+```js
+axios('http://127.0.0.1:7001/default/getArticleById/' + id).then( //??不能用id?id-1因为违反了restful规范，不能有计算的，只能是纯url
+```
+出现404错
+xhr.js:178 GET http://127.0.0.1:7001/default/getArticleById/1 404 (Not Found)
+路由没配置好，没加参数
+3. 
+service/router/defalt.js
+```js
+// 根据id查询详情,记得配置参数,跟react配置参数一样，直接在后面加:和要穿的参数，
+router.get('/default/getArticleById/:id', controller.default.home.getArticleById)
+```
+再点一下，发生500错误，就是服务器错误，看一下接口
+controller/default/home.js
+发现是单词拼写有问题this.ctx.params.id
+可以从首页跳转到detailed.js页面了
+id也传到了http://localhost:3000/detailed?id=2
+
+# 重构前台页面博客详细页面
+## 20. 1-marked + highlight.js
+重构详细页面，之前使用了react-markdown,但是有一个问题，代码高亮是很复杂的，还是重构成marked + highlight.js 形式
+1. 安装一下
+在blog终端
+yarn add marked 
+yarn add highlight.js
+打开package.json看一下把highlight删掉，这是不对的，没有就不管
+react-markdown也不要了，删掉
+2. 要使用就要引入
+pages/detailed.js
+```js
+import marked from 'marked' //用来解析markdown的代码的
+import hljs from 'highlight.js' //代码高亮
+import 'highlight.js/styles/monokai-sublime.css' //引入样式 //选一个跟sublime编辑器样的那种样式
+```
+然后之前复制的测试markdown文本不要了，删掉
+因为我们已经获得了服务端接口传过来的数据，所以把接口的东西用props传递过来
+```js
+{/* 文章主体内容 */}
+<div className="detailed-content">
+  {/* 这里面解析的是mackdowm里面的内容 */}
+  {/* 有几个属性
+  source:要把什么进行渲染，
+  escapeHtml 如果里面有html标签，不进行转换写成false，就是原样输出html,进行转换就是就会输出htlm标签(好像两个没什么变化) */}
+  {/* <ReactMarkdown
+    source={markdown} 
+    escapeHtml={false}></ReactMarkdown> 不要这种了*/}
+</div>
+```
+直接let html = marked(props.article_content)这样是不行的
+```js
+//marked
+  //这个renderer是我们使用marked必须要用的
+  const renderer = new marked.Renderer()
+  //然后配置marked，如何解析markdown
+  // 有一个方法,里面传递的是一个对象,这个对象就是我们所有设置的属性都要在这里写
+  marked.setOptions({
+    renderer:renderer,
+    gfm:true, //启动类似github样式的markdown //就是样式渲染的方式跟github一样
+    pedantic: false, //有一个容错的代码在里面，true就是完全不容错,不符合markdown的都不行
+    sanitize: false, //原始输出，忽略html标签（就是比如有视频直接插入，视频渲染，如果填true就会忽略html，视频就不会显示），我们不忽略
+    tables:true, //是否允许我们根据GitHub输出表格，样式是github的样式
+    // 记得tables为true的时候，gfm一定要也要填写上，否则会失效
+    breaks: false, //是否支持github的换行符,也是必须有gfm:true//我们还是使用原来的，不使用github的样式
+    smartLists: true, //就是给我们自动渲染我们的列表,默认是false-》自己写
+    // highlight这里要写一个方法，是如何让让代码高亮，要code进去
+    highlight: function(code) {
+      // 返回的值就是用highlight插件执行highlightAuto(我们不传递我们写的是css代码，还是js代码，它会自动检测是哪种(所以有点慢，传了的话会快点)，然后返回)
+      return hljs.highlightAuto(code).value 
+    }
+  })
+  // 转化成html
+  let html = marked(props.article_content) //是从接口传来的值，放到marked中,用marked方法（marked中的方法）进行渲染
+  //输出还是有问题的，不能直接使用这种方式直接输出
+  ```
+可以试一下看一下 {html}
+```js
+<div className="detailed-content">
+  {html}                
+</div>
+```
+重启一下服务blog
+
+换成
+<div className="detailed-content"
+dangerouslySetInnerHTML={{__html:html}}>
+
+## 21. 2-文章导航
+之前使用的是markdown-navbar形式，现在使用了新的方案，他不再支持，现在根据新的方案，重新渲染导航。
+这个插件叫tocify.tsx，还没有开源，还不能直接yarn add
+建一个文件components/tocify.tsx 复制进去
+需要安装lodash 在blog中
+这是一个js工具库，里面有很多js方法
+然后去detailed.js
+引入，然后new出来
+自己定义锚链接<a>
+然后使用它{tocify && tocify.render()}
+
+## 22. 前台文章列表的制作-接口制作
+首页 视频 生活那三个列表栏还是不能跳转的，而且不是从后台获取的 是之前写死的，要完善一下
+1. 让文章列表等于文章类别
+service/controller/default/home.js
+之前的接口，我们的地址都是直接写在
+axios('http://127.0.0.1:7001/default/getArticleById/' + id).then(
+这样的，直接写的地址，这样不利于变动，一变就要各个文件找，不方便，把所有接口的地址还有接口单独放到一个文件中管理
+blog/config/apiUrl.js
+然后先在detailed中引入试试，可以用
+然后到service/app/controller/default/home.js
+重新声明一个接口
+//得到类别名称和编号
+async getTypeInfo() {
+  const result = await this.app.mysql.select('type') //这里是直接读类别，不用连接什么，所以用select,括号里面是表的名称
+  this.ctx.body = {data: result},
+}
+然后其实本来还有一个图标的，也是在数据库中存，
+加一个字段，把图标的名字存进去
+改写header组件
+用react hooks的useEffect模拟生命周期，然后读取数据，然后赋给页面
+```js
+import React,{useState, useEffect} from 'react';
+import Router from 'next/router' //让图标可以跳转
+import Link from 'next/link' //跳转
+import axios from 'axios' //要读取数据
+import servicePath from '../config/apiUrl' //接口
+```
+然后做生命周期
+ 这里不用getInitialProps，因为
+```js
+ //把文章列表读出来，用数组解构的方式生命
+    // useState需要一个初始值的，暂时先给个空值{}
+    const [navArray, setNavArray] = useState({})
+    // 然后用useEffect得到数据
+    // 里面可以放两个参数，一个是方法，一个是值，每当值变化，里面的方法就会执行
+    // 放一个空的意思，就是只有当第一次进入的时候才会执行
+    useEffect(()=>{
+        // 本身useEffect就是异步的，异步里面不能再加异步，所以要新声明一个变量（就是一个方法）不能直接使用异步
+        const fetchData = async ()=>{
+            const result = await axios(servicePath.getTypeInfo).then( //then的回调函数
+                (res) => {
+                    // 得到了数据，然后要用setNavArray给navArray赋值
+                    // setNavArray(res.data.data)
+                    return res.data
+                }
+            )
+            setNavArray(result)
+        }
+        // const result = await axios
+        // 还要用一下，前面还只是变量
+        fetchData() //然后就能获得文章的类别信息了
+    },[])
+```
+因为getInitialProps不能用state,而且，他只能在夫组件中使用，子组件不能用该方法
+{/* 加一个onclick */}
+<Menu mode="horizontal" onClick={handleClick}>
+然后文章列表循环
+
+关于图标：
+加入自己想要的图标到这里（自己建的图标项目中）
+https://www.iconfont.cn/manage/index?manage_type=myprojects&projectId=1797825
+代码中复制相应的*.js比如：
+```js
+import { createFromIconfontCN } from '@ant-design/icons';
+
+const IconFont = createFromIconfontCN({
+    scriptUrl: '//at.alicdn.com/t/font_1797825_6yskyd598jp.js',
+});
+// 使用
+<IconFont type="icon-home" /> //只要加入到这里的就会有
+```
+有时候可能需要过呢更新一下scriptUrl
+忘记配置路径了
+service/router.default.js
+router.get('/default/getTypeInfo', controller.default.home.getTypeInfo)
+再点击发现点的时候也能跳转了
+不过还只是死的，不能根据类别读取文章列表信息
+
+## 23

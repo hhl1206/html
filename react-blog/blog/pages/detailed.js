@@ -12,49 +12,58 @@ import {
   FolderOpenOutlined,
   FireOutlined
 } from '@ant-design/icons'
-import ReactMarkdown from 'react-markdown'
+// import ReactMarkdown from 'react-markdown'//不用了删掉
 // 里面是自带css的，所以要引入css
-import MarkNav from 'markdown-navbar'
+// import MarkNav from 'markdown-navbar'
 import 'markdown-navbar/dist/navbar.css'
+import marked from 'marked' //用来解析markdown的代码的
+import hljs from 'highlight.js' //代码高亮
+import 'highlight.js/styles/monokai-sublime.css' //引入样式 //选一个跟sublime编辑器样的那种样式
+//引入的时候注意文件夹的顺序,后缀不可以省略
+import Tocify from '../components/tocify.tsx'
+import servicePath from '../config/apiUrl' //接口
 
 
-const Detailed = () => {
+const Detailed = (props) => {
 
-  let markdown = 
-    '# P01:课程介绍和环境搭建\n' +
-    '[ **M** ] arkdown + E [ **ditor** ] = **Mditor**  \n' +
-    '> Mditor 是一个简洁、易于集成、方便扩展、期望舒服的编写 markdown 的编辑器，仅此而已... \n\n' +
-    '**这是加粗的文字**\n\n' +
-    '*这是倾斜的文字*`\n\n' +
-    '***这是斜体加粗的文字***\n\n' +
-    '~~这是加删除线的文字~~ \n\n' +
-    '\`console.log(111)\` \n\n' +
-    '# p02:来个Hello World 初始Vue3.0\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n' +
-    '***\n\n\n' +
-    '# p03:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '# p04:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '#5 p05:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '# p06:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '# p07:Vue3.0基础知识讲解\n' +
-    '> aaaaaaaaa\n' +
-    '>> bbbbbbbbb\n' +
-    '>>> cccccccccc\n\n' +
-    '``` var a=11; ```'
+  const tocify = new Tocify() //然后要自定义一下渲染模式，
+  // renderer虽然渲染标题了，但是不带锚链接（a标签）,所以要自定义一个
+
+  // 有一个heading的属性 raw可以不写
+  // 比如 ###就代表等级，后面的linan就是文本
+  
+
+  // console.log(props.article_content, '++++++');
+  //marked
+  //这个renderer是我们使用marked必须要用的
+  const renderer = new marked.Renderer()
+
+  renderer.heading = function(text,level,raw) {
+    const anchor = tocify.add(text,level)
+    // 原来不带a链接，所以要自定义 最后还加一个换行
+    return `<a id="${anchor}" href="#${anchor}" class="anchor-fix"><h${level}>${text}</h${level}></a>\n`
+  }
+
+  //然后配置marked，如何解析markdown
+  // 有一个方法,里面传递的是一个对象,这个对象就是我们所有设置的属性都要在这里写
+  marked.setOptions({
+    renderer:renderer,
+    gfm:true, //启动类似github样式的markdown //就是样式渲染的方式跟github一样
+    pedantic: false, //有一个容错的代码在里面，true就是完全不容错,不符合markdown的都不行
+    sanitize: false, //原始输出，忽略html标签（就是比如有视频直接插入，视频渲染，如果填true就会忽略html，视频就不会显示），我们不忽略
+    tables:true, //是否允许我们根据GitHub输出表格，样式是github的样式
+    // 记得tables为true的时候，gfm一定要也要填写上，否则会失效
+    breaks: false, //是否支持github的换行符,也是必须有gfm:true//我们还是使用原来的，不使用github的样式
+    smartLists: true, //就是给我们自动渲染我们的列表,默认是false-》自己写
+    // highlight这里要写一个方法，是如何让让代码高亮，要code进去
+    highlight: function(code) {
+      // 返回的值就是用highlight插件执行highlightAuto(我们不传递我们写的是css代码，还是js代码，它会自动检测是哪种(所以有点慢，传了的话会快点)，然后返回)
+      return hljs.highlightAuto(code).value 
+    }
+  });
+  // 转化成html
+  let html = marked(props.article_content)  //是从接口传来的值，放到marked中,用marked方法（marked中的方法）进行渲染
+  //输出还是有问题的，不能直接使用这种方式直接输出
   return (
     <div>
       <Head>
@@ -87,14 +96,9 @@ const Detailed = () => {
                 <span><FireOutlined />5498人</span>
               </div>
               {/* 文章主体内容 */}
-              <div className="detailed-content">
-                {/* 这里面解析的是mackdowm里面的内容 */}
-                {/* 有几个属性
-                source:要把什么进行渲染，
-                escapeHtml 如果里面有html标签，不进行转换写成false，就是原样输出html,进行转换就是就会输出htlm标签(好像两个没什么变化) */}
-                <ReactMarkdown
-                  source={markdown} 
-                  escapeHtml={false}></ReactMarkdown>
+              <div className="detailed-content"
+              dangerouslySetInnerHTML={{__html:html}}>
+                {/* {html} 不能直接这样写           */}
               </div>
             </div>
           </div>
@@ -115,12 +119,15 @@ const Detailed = () => {
                 source:要解析哪个markdown作为navbar
                 headingTopOffset={0}:锚点距离顶部的距离，默认为0）等我们真正有一个文章再写
                 ordered:是否是有编号，默认带编号，true */}
-              <MarkNav 
+              {/* <MarkNav 
               className="article-menu"
-              source={markdown}
+              // source={markdown}
+              source= {html} //也要改
               // headingTopOffset={0}
               ordered={false}
-              />
+              /> */}
+              {/* 换成tocify */}
+              {tocify && tocify.render()}
             </div>
           </Affix>
         </Col>
@@ -131,15 +138,17 @@ const Detailed = () => {
 }
 
 // 根据id查询
-// 直接用它里面的方法，也是i、异步的，里面传递上下文，因为我们要接收前台传过来的id
-Detailed.getInotialProps = async(context) => {
+// 直接用它里面的方法，它也是异步的，里面传递上下文参数，因为我们要接收前台传过来的id
+Detailed.getInitialProps = async(context)=>{
   // 接收前台传过来的id
   console.log(context.query.id)
   // 把通过链接传过来的id接受到
   let id = context.query.id
   // 然后请求我们的接口，需要一个promise对象
   const promise = new Promise((resolve)=> {
-    axios('http://127.0.0.1:7001/default/getArticleById').then(
+    //页面请求接口数据 记得router加路径
+    // axios('http://127.0.0.1:7001/default/getArticleById/' + id).then( //??
+    axios(servicePath.getArticleById+id).then(
       (res) => {
         console.log(res)
         resolve(res.data.data[0]) //??
