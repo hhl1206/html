@@ -1041,3 +1041,12 @@ egg-cors
 cookie跨域是很不安全的做法！！
 用JWT？？
 
+## 34.10-中台路由守卫制作
+前面做了前端登录，
+service 是通过egg.js中的中间件实现的
+service/app/middleware/adminauth.js是用来后台验证用户的，中间件
+然后使用
+怎么在路由中进行守卫呢？service/router/admin.js
+
+## 35.11-读取文章分类信息
+
