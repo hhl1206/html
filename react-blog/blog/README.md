@@ -857,3 +857,187 @@ yarn add antd 或者npm install antd --save(就会到dependance)
 然后可以引入
 在App.js中引入
 写个按钮试一下
+
+## 26.2-页面路由配置
+路由，把一个个的页面关联到一起
+路由放到一个文件中设置
+1. 安装路由
+yarn add react-router-dom
+2. 建立路由文件
+admin/src/Pages --所有的页面文件都放这里，路由文件也算在里面
+admin/src/Pages/Main.js --我们的路由文件，最先加载的是这个文件
+admin/src/Pages/Login.js --进入后台的登录页面,要通过路由机制，实现跳转到登录页面 
+简单写一下Login.js
+```js
+import React from 'react';
+
+function Login() {
+    return (
+        <div>我是登录页面</div>
+    )
+}
+
+//一定记得，所有的组件最后都要暴露出去
+export default Login;
+```
+然后Main.js
+```js
+import React from 'react'; //写组件必须要有的
+import { BrowserRouter as Router,Route} from 'react-router-dom' //引入路由
+import Login from './Login' //要跳转的页面，引进来
+
+//用hooks方法进行编写 无状态组件
+function Main() {
+    return(
+        // Router的配置，作为外层标签 Router叫路由器，Route叫线路
+        // 路由器需要给他一条线路指引
+        <Router>
+            {/* path是路经，访问什么能到这个页面 exact精确匹配这是真正实现跳转功能的部分，Link里面是相当于a标签 */}
+            {/* 就是当访问这个路径的时候，把Login这个页面加载过去 */}
+            <Route path="/login/" exact component = {Login} ></Route>
+        </Router>
+    )
+}
+
+// 记得暴露出去
+export default Main;
+```
+然后要让路由起作用，要改一下index.js
+把App.js删掉
+index.js
+```js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Main from './Pages/Main';
+
+ReactDOM.render(
+    <Main />,
+  document.getElementById('root')
+);
+```
+yarn start看一下
+http://localhost:3000/login 可以访问到
+
+## 27.3-登录页面UI制作
+Pages/Login.js
+试一下Spin组件
+加一下样式 src/static/css/Login.css
+然后再Login.js中记得引入
+
+## 28.4-UI框架的Layout搭建
+后台首页的UI，大结构做出来
+Pages/AdminIndex.js
+ant-design有一个layout组件，专门进行布局的
+https://ant.design/components/layout-cn/
+复制代码
+还有一段css也复制一下
+新建文件/static/css/AdminIndex.css
+把里面的class的写组件的方式写成hooks
+写完组件，在路由中配置一下，不然不能访问
+Main.js
+然后打开终端试一下效果yarn start(启动开发时用的服务器)
+
+## 29.5 添加文章页面制作1 文章标题和写markdown的文本框
+Pages/AddArticle.js //一般页面我们都用大写，因为是一个组件
+首先引入
+要安装marked用来处理markdown
+yarn add marked
+组件引入完了，加一下css样式AddArticle.css
+然后可以编写页面了，还是用hooks的方法
+写上组件基本的样子，然后需要配置一下路由，需要配置到AdminIndex.js这个页面Content部分，插入这个组件的路由
+AdminIndex.js
+先引入路由
+```js
+import { Route } from 'react-router-dom'
+import AddArticle from './AddArticle'
+```
+然后就能到下面配置路由
+想在那里显示就在哪里配置
+因为是到这个页面就要显示AddArticle的内容，坐立Route中加一个exact精确匹配
+```js
+<div>
+  {/* 因为是到这个页面就要显示AddArticle的内容，坐立Route中加一个exact精确匹配 */}
+  {/* 意思就是路径是/index AddArticle这个组件就会显示 */}
+  <Route path="/index/" exact component={AddArticle}></Route>
+</div>
+```
+然后去AddArticle.js把UI做好
+左边两个内容的框做完了，把头部先去掉一下，是属于AdminIndex.js中的。
+<Header className="site-layout-background" style={{ padding: 0 }} />
+
+## 30.6-添加文章页面制作2
+右侧Col
+AddArticle.js
+## 31.7-Markdown转HTML ？？
+左边写了## Linan 右边要能预览出来
+解析markdown, 并进行预览
+AddArticle.js
+首先，初始值用useState展示出来，相当于声明变量
+设置marked的属性
+changeContent方法，左边文本框变化，右边也实现预览
+然后去使用一下
+<div className="show-html" dangerouslySetInnerHTML={{__html:markdownContent}}>
+可以出来，然后把文章简介也是实现，也加一个方法
+
+出来了，但是样式还是有点问题，预览那边不会自动换行,要改！！
+
+# 后台 + 中台
+## 32.8-中台登录接口编写
+1. 新建一个写后台接口的地方sercive/controller/admin/main.js
+```js
+'use strict'
+
+//把egg的controller引过来
+const Controller = require('egg').Controller
+
+// 用class的方法
+class MainController extends Controller {
+    async index() {
+        this.ctx.body="hi api" //测试一下
+    }
+}
+
+// 暴露出去
+module.exports = MainController
+// 然后去配置路由，不然访问不了
+```
+配置路由
+router/admin.js
+配置路由后，然后要引入到app/router.js中，从那里调用路由
+  require('./router/admin')(app)
+这时候路由就配置好了，然后去终端中，yarn dev
+http://127.0.0.1:7001/admin/index 记得要开启mysql数据库
+2. 写登录方法
+service/app/controller/admin/main.js
+去建一下表 admin_user
+
+## 33.9-后台登录功能的实现
+实现后台的登录
+前面已经做了接口main.js中的checkLogin ,但是还没有配置路由
+service/app/router/admin.js
+路由配置了，然后去admin中编写，
+新建一个文件admin/src/config --这里面是我们的配置信息
+admin/src/config/apiUrl.js 跟前台的那个差不多
+然后去admin/src/Pages/Login.js中引入使用
+import axios from 'axios'; // 用这个进行远端接口的访问
+yarn add axios
+然后就能编写checkLogin方法了
+关于
+function Login(props) {}
+props.history.push('/index') //??
+//要在组件的函数中传递props先
+// 因为我们要跳转，用编程导航的形式跳转，所以需要用到这个props
+然后调用
+<Button type="primary" size="large" block onClick={checkLogin}>Login in</Button>
+点击就调用
+测试一下 admin中yarn start 同时 中台也要开启yarn dev
+修改一下，让它直接访问3000端口
+admin/Pages/Main.js中
+<Route path="/" exact component = {Login} ></Route>
+没有进行跨域设置
+egg-cors
+到config.default.js中
+
+cookie跨域是很不安全的做法！！
+用JWT？？
+

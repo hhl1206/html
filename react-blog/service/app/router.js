@@ -9,4 +9,7 @@ module.exports = app => {
   // 调用require,传一个app过去
   require('./router/default')(app)
   // 去浏览器中访问一下  
+
+  require('./router/admin')(app)
+
 };

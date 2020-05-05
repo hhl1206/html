@@ -51,7 +51,9 @@ module.exports = appInfo => {
     domainWhiteList:['*'] //让所有的都可以
   };
   config.cors = {
-    origin: '*', //允许哪些域名可以默认访问
+    // origin: '*', //允许哪些域名可以默认访问
+    orgin: 'http://localhost:3000',
+    credentials:true, //允许cookies跨域 这样能在前后端分离时，还能前后端cookie缓存 //这样跨域很不安全！
     allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS' //哪些请求可以跨域访问,要大些
   };
   return {
