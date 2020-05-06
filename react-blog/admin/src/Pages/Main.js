@@ -12,7 +12,11 @@ function Main() {
             {/* path是路经，访问什么能到这个页面 exact精确匹配这是真正实现跳转功能的部分，Link里面是相当于a标签 */}
             {/* 就是当访问这个路径的时候，把Login这个页面加载过去 */}
             <Route path="/" exact component = {Login} ></Route>
-            <Route path="/index/" exact component = {AdminIndex} ></Route>
+            <Route path="/index/"  component = {AdminIndex} ></Route>
+            {/* 或者删掉上面index的精确路由 */}
+            {/* <Route path="/index/add" exact component = {AdminIndex} ></Route> */}
+            {/* <Route path="/index/list" exact component = {AdminIndex} ></Route> */}
+
 
         </Router>
     )

@@ -1049,4 +1049,107 @@ service/app/middleware/adminauth.js是用来后台验证用户的，中间件
 怎么在路由中进行守卫呢？service/router/admin.js
 
 ## 35.11-读取文章分类信息
+读出文章分类运用路由守卫
+路由守卫的用法，要获得文章类型，就要有一个文章类型的接口，接口到中台中写
+service/app/controller/admin/main.js
+写接口，写了之后要去配置路由
+router/admin.js中
+然后回到后台，配置src/config/apiUrl，然后就能找到这个接口了
+到真正的后台中AddArticle.js中
+引入处理接口的axios和servicePath
+做好修改类别信息
+写一个方法，就是从中台接口中获得文章类别信息的作用
+getTypeInfo()
+然后要使用一下，就是已进入这个AddArticle这个页面就要使用，就是用react hooks的useEffect这个方法
+//他也是一个方法，接受一个匿名函数,第二个参数是数组空的意思是只执行一次，就是一进来页面的时候
+    useEffect(()=>{
+        getTypeInfo()
+    },[])
+然后需要在下面进行循环Select的Option
+再：
+const [selectedType,setSelectType] = useState('请选择文章类型') //选择的文章类别
 
+## 36.12-添加文章内容（上）
+
+- 虽然选择了类别之后，下拉框变了，但是真的值还是没变的(useState)，所以加一个onChange时事件在Select上
+写一个关于选择类型的State: setSelectType
+给Select放上onChange方法
+const selectTypeHandler = (value) => {
+    setSelectType(value)
+}
+发布日期那里也需要
+它里面是有一个onChange方法的，直接使用
+onChange={(data, dataString) =>{setShowDate(dataString)}}>
+然后出入文章标题的那个文本框，里面也要为useState改值
+只要输入值就改变
+e是事件，e.target.value就能够获取文本框中的值
+onChange={e=>{setArticleTitle(e.target.value)}}
+然后要加上我们写的值，articleTitle，不写是不会发生变化的，
+这样，在这里面写的值就都能得到了ustState，发布文章的时候先检验这些值有没有
+- 写一个方法
+就是在我们要发布文章的时候要执行的onClick方法saveArticle()
+检验成功!
+
+## 37.13-添加文章内容（中） 去中台
+把后台接口做出来 去中台
+service/app/admin/main.js添加接口
+然后要去路由放一下才能用
+router/admin.js
+然后到后台进行使用src/config/appUrl中,先加入路经
+然后就可以使用这个接口了axios
+AddArticle.js
+saveArticle()
+去测试一下
+字段中有一个主键id，记得改成自增，因为我们这里是不传的
+我们的日期不用转成时间戳，因为已经是可以直接放进去的了
+发布成功
+然后去数据库看一下是否保存成功，成功
+
+然后是如果不是添加新的，而是更新，要怎么做
+
+## 38.13-添加文章内容（下）
+service/app/admin/main.js
+先加一个修改文章的接口方法updataArticle
+然后配置router/admin.js
+然后去后台再把apiUrl中加上去
+然后去使用AddArticle.js
+奇怪，怎么看是不是同一篇文章的？cookies??
+
+## 39.14-文章列表制作（上）
+文章列表页，方便后面的删除和修改操作
+新建文件admin/src/Pages/ArticleList.js
+先布置好UI
+想看到这个UI 要去写一下路由 AdminIndex.js中引入
+然后给文章添加文章列表AdminIndex.js
+点击文章管理的时候，有一个onClick事件handleClickArticle
+看一下效果
+！！！
+要在Main.js中加上路由
+<Route path="/index/list" exact component = {AdminIndex} ></Route>
+或者在Main.js中把/index这里的精确路由exact删掉
+
+## 40.16-文章列表制作（中）
+从后台读取数据
+到中台service/app/controller/admin/main.js
+写后台的接口
+写了接口还需要配置路由，后台才能使用
+router/admin.js
+然后去admin/config/apiUrl中加上路径，不然axios的路经就获取不到了！
+然后能去后台获取到了axios
+admin/Pages/ArticleList.js
+为什么是res.data.list??
+写了请求的方法，还需要调用，用react hooks的useEffect来调用
+改一下样式
+src/static/css/ArticleList.css
+
+## 41.17-删除文章 后台
+要有一个确认框，防止误删
+先写一下管理数据库的接口
+service/app/controller/admin/main.js
+然后去router设置路由
+还有后台的apiUrl
+然后可以在UI界面使用了
+AriticleList
+注意id一定要加，各个地方的！！
+
+## 42.18-修改文章（上）

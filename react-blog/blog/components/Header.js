@@ -14,7 +14,7 @@ import servicePath from '../config/apiUrl' //接口
 import { createFromIconfontCN } from '@ant-design/icons';
 
 const IconFont = createFromIconfontCN({
-    scriptUrl: '//at.alicdn.com/t/font_1797825_oziycd2eavp.js',
+    scriptUrl: '//at.alicdn.com/t/font_1797825_a623mg2qqr.js',
 });
 
 // 要使用ant-design的24扇格布局，需要用到里面的东西

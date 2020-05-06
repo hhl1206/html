@@ -10,11 +10,12 @@ import React, { useState } from 'react'; //hooks组件要加
 import '../static/css/AdminIndex.css';
 import { Route, Router } from 'react-router-dom'
 import AddArticle from './AddArticle'
+import ArticleList from './ArticleList'//文章列表
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
-function AdminIndex() {
+function AdminIndex(props) {
     //改state
     const [collapsed, setCollapsed] = useState(false) //控制左侧栏是否合上，设为false，打开
     //改set..
@@ -22,6 +23,14 @@ function AdminIndex() {
         setCollapsed(collapsed)
     };
 
+    // 点击文章管理
+    const handleClickArticle = e=> { //传入一个e,因为这里需要用它的key
+        if(e.key == 'addArticle') {
+            props.history.push('/index/add')
+        } else {
+            props.history.push('/index/list')
+        }
+    }
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
@@ -35,9 +44,12 @@ function AdminIndex() {
                     <Menu.Item key="2" icon={<DesktopOutlined />}>
                         添加文章
                     </Menu.Item>
-                    <SubMenu key="sub1" icon={<UserOutlined />} title="文章管理">
-                        <Menu.Item key="3">添加文章</Menu.Item>
-                        <Menu.Item key="4">文章列表</Menu.Item>
+                    {/* 点击文章管理的时候 调动方法，根据传入的key值进行跳转 */}
+                    <SubMenu key="sub1" onClick={handleClickArticle} icon={<UserOutlined />} title="文章管理">
+                        {/* <Menu.Item key="3">添加文章</Menu.Item>
+                        <Menu.Item key="4">文章列表</Menu.Item> */}
+                        <Menu.Item key="addArticle">添加文章</Menu.Item>
+                        <Menu.Item key="articleList">文章列表</Menu.Item>
                     </SubMenu>
                     <Menu.Item key="9" icon={<FileOutlined />} >
                         留言管理
@@ -56,7 +68,11 @@ function AdminIndex() {
                         <div>
                             {/* 因为是到这个页面就要显示AddArticle的内容，坐立Route中加一个exact精确匹配 */}
                             {/* 意思就是路径是/index AddArticle这个组件就会显示 */}
-                            <Route path="/index/" exact component={AddArticle}></Route>
+                            <Route path="/index/" exact component={AddArticle} />
+                            {/*  要能跳转，加一个list */}
+                            <Route path="/index/add/" exact component={AddArticle} />
+                            <Route path="/index/list/" exact component={ArticleList} />
+                            
                         </div>
                     </div>
                 </Content>
