@@ -13,6 +13,7 @@ module.exports = app => {
     router.post('/admin/updataArticle',adminauth, controller.admin.main.updataArticle)//使用路由守卫
     router.get('/admin/getArticleList',adminauth, controller.admin.main.getArticleList)//使用路由守卫
     router.get('/admin/delArticle/:id',adminauth, controller.admin.main.delArticle)//使用路由守卫
+    router.get('/admin/getArticleById/:id',adminauth, controller.admin.main.getArticleById)//使用路由守卫
     
 }
 

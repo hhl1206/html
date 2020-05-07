@@ -27,7 +27,13 @@ function AddArticle(props) {
     //他也是一个方法，接受一个匿名函数,第二个参数是数组空的意思是只执行一次，就是一进来页面的时候
     useEffect(()=>{
         getTypeInfo()
-    },[])
+        //获取文章id
+        let tmpId = props.match.params.id
+        if(tmpId){
+            setArticleId(tmpId)
+            getArticleById(tmpId)
+        } 
+        },[])
     // 设置marked
     const renderer = new marked.Renderer()
     marked.setOptions({
@@ -154,6 +160,29 @@ function AddArticle(props) {
             )
         }
     }
+    // 通过id获取文章,主要是把修改时，要修改的内容显示出来
+    const getArticleById = (id) => {
+        axios(servicePath.getArticleById+id,{withCredentials:true}).then(
+            res=>{
+                console.log(res.data.data[id-1]);
+                let articleInfo = res.data.data[id-1] //是一个数组 //这里注意
+                setArticleTitle(articleInfo.title);
+                setArticleContent(articleInfo.article_content);
+                // 对应的还要把预览地方的markdown放上去
+                let html = marked(articleInfo.article_content);
+                setMarkdownContent(html);
+                setIntroducemd(articleInfo.introduce);
+                let temInt = marked(articleInfo.introduce)
+                setIntroducehtml(temInt);
+                setShowDate(articleInfo.addTime);
+                setSelectType(articleInfo.typeId)
+            }
+        )
+    }
+    // 暂存文章
+    // const temSaveArticle = () => {
+    //     
+    // }
     
     return (
         // 页面分为两个部分文章内容和预览内容
@@ -203,6 +232,7 @@ function AddArticle(props) {
                                 className="markdown-content"
                                 rows={35}
                                 placeholder="文章内容"
+                                value={articleContent}
                                 onChange={changeContent}></TextArea>
                         </Col>
                         <Col span={12}>
@@ -218,7 +248,7 @@ function AddArticle(props) {
                     <Row>
                         <Col span={24}>
                             {/* 用样式分开一点 */}
-                            <Button size="large">暂存文章</Button>
+                            <Button size="large" >暂存文章</Button>
                             {/* 主按钮：用于主行动点，一个操作区域只能有一个主按钮 */}
                             <Button type="primary" size="large" onClick={saveArticle}>发布文章</Button>
                         </Col>
@@ -228,6 +258,7 @@ function AddArticle(props) {
                                 className="markdown-introduce"
                                 rows={4}
                                 placeholder="文章简介"
+                                value={introducemd}
                                 onChange={changeIntroduce}
                             ></TextArea>
                             {/* 预览 */}

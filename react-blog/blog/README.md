@@ -1153,3 +1153,39 @@ AriticleList
 注意id一定要加，各个地方的！！
 
 ## 42.18-修改文章（上）
+先写接口 service/app/controller/admin/main.js
+再写路由router/admin.js
+上面完成，中台部分写完，然后去后台 
+先加apiUrl
+然后去使用,写请求接口的方法
+要点击按钮能跳转，跳转到之前写过的那个页面就行
+ArticleList.js
+props.history.push('/index.add/' + id) //跳转
+需要配置能跳转的路由AdminIndex.js中
+得配置一个带参数的
+<Route path="/index/add/:id" exact component={AddArticle} />
+可以跳转了，但是还没有查询内容
+
+## 43.19-修改文章（下）
+展现内容，并且能修改
+AddArticle.js
+然后使用getArticleById(),放到useEffect中
+要在useEffect中先获取id,因为我们之前做过判断，如果有id，就是修改，没有就是新增
+文章简介，文章内容等没有值，是因为没有写value
+value={article_content}
+还有关于根据id查询文章
+let articleInfo = res.data.data[id-1] //是一个数组 //这里注意要这样加id,因为从获取的数据的数组中拿到，数组从0开始
+暂存文章？
+
+# 44.博客部署介绍和演示
+服务器 树莓派版本
+putty远程连接服务器
+pm2 管理进程 守护
+npm -- run start开启服务器
+
+cd admin
+打包
+npm run build / yarn build
+会新生成一个build文件夹，是一个完全的静态网页，没必要把所有的东西都拷贝到里面，因为后台是管理博客的，这样会不安全
+用nginx
+

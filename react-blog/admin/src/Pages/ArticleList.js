@@ -42,6 +42,23 @@ function ArticleList(props) { //里面要传props，属性
             }
         })
     }
+    // 修改文章跳转的方法
+    const updateArticle = (id) => {
+        // console.log(id);
+        axios({
+            method:'get',
+            url: servicePath.getArticleById+id,
+            withCredentials:true
+        }).then(
+            res=>{
+                if(res.data.isSuccess !== '') {
+                    props.history.push('/index/add/' + id) //跳转 //需要配置一下路由AdminIndex.js
+                } else {
+                    message.error('没有这个id')
+                }
+            }
+        )
+    }
     return(
         <div>
             {/*属性 header：列表的头 */}
@@ -89,7 +106,7 @@ function ArticleList(props) { //里面要传props，属性
                                 {item.view_count}
                             </Col>
                             <Col span={4}>
-                                <Button type="primary">修改</Button>&nbsp;
+                                <Button type="primary" onClick={() => {updateArticle(item.id)}}>修改</Button>&nbsp;
                                 {/* 记得把id传过去 */}
                                 <Button onClick={() => delArticle(item.id)} >删除</Button>
                             </Col>

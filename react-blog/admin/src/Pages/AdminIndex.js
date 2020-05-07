@@ -72,6 +72,7 @@ function AdminIndex(props) {
                             {/*  要能跳转，加一个list */}
                             <Route path="/index/add/" exact component={AddArticle} />
                             <Route path="/index/list/" exact component={ArticleList} />
+                            <Route path="/index/add/:id" exact component={AddArticle} />
                             
                         </div>
                     </div>
