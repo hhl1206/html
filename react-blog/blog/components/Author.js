@@ -19,7 +19,7 @@ const Author = () => {
             <Divider>社交账号</Divider>
             {/* 这个图标是antd中自带的，引入Avator就能用(好像v4用不了) */}
             {/* <Avatar size={28} icon="github" className="account"></Avatar> */}
-            <Avatar size={28} icon={<GithubOutlined />} className="account"></Avatar>
+            <a href="https://github.com/"><Avatar size={28} icon={<GithubOutlined />} className="account"></Avatar></a>
             <Avatar size={28} icon={<QqOutlined />} className="account"></Avatar>
             <Avatar size={28} icon={<WechatOutlined />} className="account"></Avatar>
             </div>

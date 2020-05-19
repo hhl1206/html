@@ -120,7 +120,7 @@ import Linan from '../components/linan'
 <div><Link href='/linanB'><a>去linanB页面</a></Link></div>
 
 有一个坑，只支持一个父标签，不支持兄弟标签
-index.js + linanA + linanB
+index.js + linanB + linanA
 ```js
 // index.js
 import React from 'react';
@@ -230,3 +230,70 @@ query=> ？id=1 用问号
 path=> :id=1  用冒号
 
 只支持query这种方式传参是由next.js这个框架决定的
+pages/index.js + pages/xiaojiejie.js
+```js
+// index.js
+import React from 'react';
+import Link from 'next/link';
+import Router from 'next/router';
+// import next from 'next'; //没有用到，暂时不写
+
+const Home = () => {
+  function gotoXiaojiejie() {
+    // Router.push('/xiaojiejie?name=临安')
+    // push的内容不再是字符串，而是对象
+    Router.push({
+      pathname:'/xiaojiejie',
+      query: {name: 'linan'} //接受的是一个对象，里面可以有多个属性
+    })
+    // 编程式导航能这样写，那标签是导航也可以
+  }
+  return (
+    <>
+      <div>我是首页</div>
+      <div>
+        {/* <Link href="/xiaojiejie?name=结衣"><a>选择结衣</a></Link> */}
+        {/* 也使用面向对象形式 */}
+        {/* 第一个{}代表这里面是一个JSX语法，在里面一个{}代表里面是一个对象，对象里面写属性 */}
+        <Link href={{pathname:'xiaojiejie', query: {name: 'jieyi'}}}><a>选择结衣</a></Link>
+        <br></br>
+        <Link href="/xiaojiejie?name=临安"><a>选择临安</a></Link>
+      </div>
+      {/* 编程式跳转 */}
+      <div>
+        <button onClick={gotoXiaojiejie}>选临安</button>
+      </div>
+      {/* 能不能面向对象编程？改一下push */}
+    </>
+  )
+}
+
+// 然后需要把Home暴露出去
+export default Home;
+```
+```js
+// pages/xiaojiejie
+// 这里要接收参数，需要用到withRoute（技能方法，如果做了一个组件，本身没有这个方法，加了这个就有了这个方法）
+// 就能接收参数了，不使用这个就没有接收参数的能力了 
+import { withRouter } from 'next/Router'
+import Link from 'next/link'
+
+// 写一个方法,用hook的形式写组件，就是一个函数
+// 箭头函数里面传一个router的值(如果没有用withRouter,这里是不能传值的)
+const Xiaojiejie = ({router}) => {
+    return (
+        <>
+        <div>{router.query.name}被选择了</div>
+        <Link href='/'><a>返回首页</a></Link>
+        </>
+    )
+}
+
+// 暴露出去
+// withRouter是next.js的高级组件，用来处理路由用的（这个名字是自己起的？）
+// 相当于有了这个，我们就能取到我们的路由了
+export default withRouter(Xiaojiejie);
+```
+
+# 6.路由中的6个钩子
+钩子事件
